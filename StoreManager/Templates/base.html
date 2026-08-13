@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Store Manager{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">SM</div>
+
+            <div>
+                <h2>Store Manager</h2>
+                <span>Management System</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <p class="menu-title">MAIN</p>
+
+            <a href="/" class="nav-item">
+                <span>▦</span>
+                Dashboard
+            </a>
+
+            <a href="/products" class="nav-item">
+                <span>📦</span>
+                Products
+            </a>
+
+            <a href="/customers" class="nav-item">
+                <span>👥</span>
+                Customers
+            </a>
+
+            <a href="/suppliers" class="nav-item">
+                <span>🚚</span>
+                Suppliers
+            </a>
+
+            <p class="menu-title">TRANSACTIONS</p>
+
+            <a href="/sales" class="nav-item">
+                <span>💰</span>
+                Sales
+            </a>
+
+            <a href="/purchases" class="nav-item">
+                <span>🛒</span>
+                Purchases
+            </a>
+
+            <p class="menu-title">MANAGEMENT</p>
+
+            <a href="/employees" class="nav-item">
+                <span>👨‍💼</span>
+                Employees
+            </a>
+
+            <a href="/reports" class="nav-item">
+                <span>📊</span>
+                Reports
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <a href="#" class="nav-item">
+                <span>⚙</span>
+                Settings
+            </a>
+
+            <a href="#" class="nav-item logout">
+                <span>↪</span>
+                Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main-content">
+
+        <!-- TOP NAVBAR -->
+
+        <header class="topbar">
+
+            <div>
+                <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+
+                <p class="breadcrumb">
+                    Store Manager / {% block breadcrumb %}Dashboard{% endblock %}
+                </p>
+            </div>
+
+            <div class="topbar-right">
+
+                <button class="notification">
+                    🔔
+                    <span class="notification-dot"></span>
+                </button>
+
+                <div class="profile">
+
+                    <div class="profile-avatar">
+                        A
+                    </div>
+
+                    <div class="profile-info">
+                        <strong>Admin</strong>
+                        <span>Administrator</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+
+        <section class="page-content">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

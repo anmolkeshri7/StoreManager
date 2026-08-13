@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}
+Products - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Products
+{% endblock %}
+
+{% block breadcrumb %}
+Products
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ================= PAGE HEADER ================= -->
+
+<div class="page-header">
+
+    <div>
+        <h2>Product Management</h2>
+
+        <p>
+            Manage your store products, pricing and inventory.
+        </p>
+    </div>
+
+    <button class="btn btn-primary">
+        + Add Product
+    </button>
+
+</div>
+
+
+<!-- ================= STAT CARDS ================= -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            📦
+        </div>
+
+        <div>
+            <span>Total Products</span>
+            <h3>{{ products|length }}</h3>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            ₹
+        </div>
+
+        <div>
+            <span>Inventory Value</span>
+            <h3>₹0</h3>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            ⚠
+        </div>
+
+        <div>
+            <span>Low Stock</span>
+            <h3>0</h3>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon red">
+            !
+        </div>
+
+        <div>
+            <span>Out of Stock</span>
+            <h3>0</h3>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= PRODUCT TABLE ================= -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+            <h2>All Products</h2>
+
+            <p>
+                View and manage your products.
+            </p>
+        </div>
+
+        <div class="table-actions">
+
+            <div class="search-box">
+
+                <span>⌕</span>
+
+                <input
+                    type="text"
+                    id="productSearch"
+                    placeholder="Search products..."
+                >
+
+            </div>
+
+            <button class="btn btn-secondary">
+                Filter
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Product</th>
+
+                    <th>Category</th>
+
+                    <th>Supplier</th>
+
+                    <th>Purchase Price</th>
+
+                    <th>Selling Price</th>
+
+                    <th>Stock</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for product in products %}
+
+                <tr>
+
+                    <td>
+                        #{{ product.product_id }}
+                    </td>
+
+
+                    <td>
+
+                        <div class="product-name">
+
+                            <div class="product-image">
+                                📦
+                            </div>
+
+                            <div>
+                                <strong>
+                                    {{ product.product_name }}
+                                </strong>
+
+                                <small>
+                                    {{ product.barcode }}
+                                </small>
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        Category {{ product.category_id }}
+                    </td>
+
+
+                    <td>
+                        Supplier {{ product.supplier_id }}
+                    </td>
+
+
+                    <td>
+                        ₹{{ product.purchase_price }}
+                    </td>
+
+
+                    <td>
+                        <strong>
+                            ₹{{ product.selling_price }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+                        {{ product.stock_quantity }}
+                        {{ product.unit }}
+                    </td>
+
+
+                    <td>
+
+                        {% if product.stock_quantity == 0 %}
+
+                        <span class="badge badge-danger">
+                            Out of Stock
+                        </span>
+
+                        {% elif product.stock_quantity <= product.reorder_level %}
+
+                        <span class="badge badge-warning">
+                            Low Stock
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge badge-success">
+                            Available
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="action-buttons">
+
+                            <button
+                                class="icon-btn edit"
+                                title="Edit">
+                                ✎
+                            </button>
+
+                            <button
+                                class="icon-btn delete"
+                                title="Delete">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="9" class="empty-state">
+
+                        <div>
+                            📦
+                        </div>
+
+                        <h3>No products found</h3>
+
+                        <p>
+                            Add your first product to get started.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
