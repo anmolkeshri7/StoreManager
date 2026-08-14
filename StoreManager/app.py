@@ -25,6 +25,14 @@ from backend.supplierdao import (
     delete_supplier
 )
 
+from backend.customerdao import (
+    get_customers,
+    get_customer_by_id,
+    add_customer,
+    update_customer,
+    delete_customer
+)
+
 
 app = Flask(__name__)
 
@@ -42,6 +50,7 @@ def home():
 # =========================================================
 # PRODUCT ROUTES
 # =========================================================
+
 
 # ---------------- VIEW PRODUCTS ----------------
 
@@ -81,13 +90,8 @@ def add_product_page():
         )
 
         if supplier_id:
-
-            supplier_id = int(
-                supplier_id
-            )
-
+            supplier_id = int(supplier_id)
         else:
-
             supplier_id = None
 
         barcode = request.form.get(
@@ -148,7 +152,6 @@ def edit_product_page(product_id):
     )
 
     if product is None:
-
         return "Product not found", 404
 
     categories = get_categories()
@@ -170,13 +173,8 @@ def edit_product_page(product_id):
         )
 
         if supplier_id:
-
-            supplier_id = int(
-                supplier_id
-            )
-
+            supplier_id = int(supplier_id)
         else:
-
             supplier_id = None
 
         barcode = request.form.get(
@@ -247,6 +245,7 @@ def delete_product_page(product_id):
 # CATEGORY ROUTES
 # =========================================================
 
+
 # ---------------- VIEW CATEGORIES ----------------
 
 @app.route("/categories")
@@ -306,7 +305,6 @@ def edit_category_page(category_id):
     )
 
     if category is None:
-
         return "Category not found", 404
 
     if request.method == "POST":
@@ -368,6 +366,7 @@ def delete_category_page(category_id):
 # =========================================================
 # SUPPLIER ROUTES
 # =========================================================
+
 
 # ---------------- VIEW SUPPLIERS ----------------
 
@@ -440,7 +439,6 @@ def edit_supplier_page(supplier_id):
     )
 
     if supplier is None:
-
         return "Supplier not found", 404
 
     if request.method == "POST":
@@ -507,6 +505,150 @@ def delete_supplier_page(supplier_id):
             "one or more products are using it. "
             "Change the products to another supplier "
             "before deleting this supplier.",
+            400
+        )
+
+
+# =========================================================
+# CUSTOMER ROUTES
+# =========================================================
+
+
+# ---------------- VIEW CUSTOMERS ----------------
+
+@app.route("/customers")
+def customers():
+
+    data = get_customers()
+
+    return render_template(
+        "customers.html",
+        customers=data
+    )
+
+
+# ---------------- ADD CUSTOMER ----------------
+
+@app.route(
+    "/customers/add",
+    methods=["GET", "POST"]
+)
+def add_customer_page():
+
+    if request.method == "POST":
+
+        customer_name = request.form[
+            "customer_name"
+        ].strip()
+
+        phone = request.form.get(
+            "phone",
+            ""
+        ).strip()
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip()
+
+        address = request.form.get(
+            "address",
+            ""
+        ).strip()
+
+        add_customer(
+            customer_name,
+            phone,
+            email,
+            address
+        )
+
+        return redirect(
+            url_for("customers")
+        )
+
+    return render_template(
+        "add_customer.html"
+    )
+
+
+# ---------------- EDIT CUSTOMER ----------------
+
+@app.route(
+    "/customers/edit/<int:customer_id>",
+    methods=["GET", "POST"]
+)
+def edit_customer_page(customer_id):
+
+    customer = get_customer_by_id(
+        customer_id
+    )
+
+    if customer is None:
+        return "Customer not found", 404
+
+    if request.method == "POST":
+
+        customer_name = request.form[
+            "customer_name"
+        ].strip()
+
+        phone = request.form.get(
+            "phone",
+            ""
+        ).strip()
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip()
+
+        address = request.form.get(
+            "address",
+            ""
+        ).strip()
+
+        update_customer(
+            customer_id,
+            customer_name,
+            phone,
+            email,
+            address
+        )
+
+        return redirect(
+            url_for("customers")
+        )
+
+    return render_template(
+        "edit_customer.html",
+        customer=customer
+    )
+
+
+# ---------------- DELETE CUSTOMER ----------------
+
+@app.route(
+    "/customers/delete/<int:customer_id>",
+    methods=["POST"]
+)
+def delete_customer_page(customer_id):
+
+    try:
+
+        delete_customer(
+            customer_id
+        )
+
+        return redirect(
+            url_for("customers")
+        )
+
+    except IntegrityError:
+
+        return (
+            "Cannot delete this customer because "
+            "this customer has existing sales records.",
             400
         )
 
