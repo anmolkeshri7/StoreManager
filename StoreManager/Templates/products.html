@@ -15,22 +15,25 @@ Products
 
 {% block content %}
 
-<!-- ================= PAGE HEADER ================= -->
-
 <div class="page-header">
 
     <div>
-        <h2>Product Management</h2>
+
+        <h2>
+            Product Management
+        </h2>
 
         <p>
             Manage your store products, pricing and inventory.
         </p>
+
     </div>
 
-    <!-- ADD PRODUCT BUTTON -->
 
-    <a href="{{ url_for('add_product_page') }}"
-       class="btn btn-primary">
+    <a
+        href="{{ url_for('add_product_page') }}"
+        class="btn btn-primary"
+    >
         + Add Product
     </a>
 
@@ -41,7 +44,6 @@ Products
 
 <div class="stats-grid">
 
-    <!-- TOTAL PRODUCTS -->
 
     <div class="stat-card">
 
@@ -51,7 +53,9 @@ Products
 
         <div>
 
-            <span>Total Products</span>
+            <span>
+                Total Products
+            </span>
 
             <h3>
                 {{ products|length }}
@@ -62,8 +66,6 @@ Products
     </div>
 
 
-    <!-- INVENTORY VALUE -->
-
     <div class="stat-card">
 
         <div class="stat-icon green">
@@ -72,7 +74,9 @@ Products
 
         <div>
 
-            <span>Inventory Value</span>
+            <span>
+                Inventory Value
+            </span>
 
             <h3>
                 ₹0
@@ -83,8 +87,6 @@ Products
     </div>
 
 
-    <!-- LOW STOCK -->
-
     <div class="stat-card">
 
         <div class="stat-icon orange">
@@ -93,7 +95,9 @@ Products
 
         <div>
 
-            <span>Low Stock</span>
+            <span>
+                Low Stock
+            </span>
 
             <h3>
                 0
@@ -104,8 +108,6 @@ Products
     </div>
 
 
-    <!-- OUT OF STOCK -->
-
     <div class="stat-card">
 
         <div class="stat-icon red">
@@ -114,7 +116,9 @@ Products
 
         <div>
 
-            <span>Out of Stock</span>
+            <span>
+                Out of Stock
+            </span>
 
             <h3>
                 0
@@ -131,8 +135,6 @@ Products
 
 <div class="content-card">
 
-
-    <!-- TABLE HEADER -->
 
     <div class="card-header">
 
@@ -151,30 +153,28 @@ Products
 
         <div class="table-actions">
 
-
-            <!-- SEARCH -->
-
             <div class="search-box">
 
-                <span>⌕</span>
+                <span>
+                    ⌕
+                </span>
 
                 <input
                     type="text"
                     id="productSearch"
                     placeholder="Search products..."
+                    autocomplete="off"
                 >
 
             </div>
 
 
-            <!-- FILTER BUTTON -->
-
             <button
                 type="button"
-                class="btn btn-secondary">
-
-                Filter
-
+                class="btn btn-secondary"
+                id="clearSearch"
+            >
+                Clear
             </button>
 
         </div>
@@ -186,62 +186,44 @@ Products
 
     <div class="table-container">
 
-        <table>
+        <table id="productsTable">
 
             <thead>
 
                 <tr>
 
-                    <th>
-                        ID
-                    </th>
+                    <th>ID</th>
 
-                    <th>
-                        Product
-                    </th>
+                    <th>Product</th>
 
-                    <th>
-                        Category
-                    </th>
+                    <th>Category</th>
 
-                    <th>
-                        Supplier
-                    </th>
+                    <th>Supplier</th>
 
-                    <th>
-                        Purchase Price
-                    </th>
+                    <th>Purchase Price</th>
 
-                    <th>
-                        Selling Price
-                    </th>
+                    <th>Selling Price</th>
 
-                    <th>
-                        Stock
-                    </th>
+                    <th>Stock</th>
 
-                    <th>
-                        Status
-                    </th>
+                    <th>Status</th>
 
-                    <th>
-                        Action
-                    </th>
+                    <th>Action</th>
 
                 </tr>
 
             </thead>
 
 
-            <tbody>
+            <tbody id="productTableBody">
 
 
                 {% for product in products %}
 
-                <tr>
+                <tr class="product-row">
 
 
-                    <!-- PRODUCT ID -->
+                    <!-- ID -->
 
                     <td>
                         #{{ product.product_id }}
@@ -253,7 +235,6 @@ Products
                     <td>
 
                         <div class="product-name">
-
 
                             <div class="product-image">
                                 📦
@@ -288,30 +269,38 @@ Products
                     </td>
 
 
-                    <!-- CATEGORY -->
+                    <!-- CATEGORY NAME -->
 
                     <td>
 
-                        Category
-                        {{ product.category_id }}
+                        {% if product.category_name %}
+
+                            {{ product.category_name }}
+
+                        {% else %}
+
+                            <span>
+                                Not assigned
+                            </span>
+
+                        {% endif %}
 
                     </td>
 
 
-                    <!-- SUPPLIER -->
+                    <!-- SUPPLIER NAME -->
 
                     <td>
 
-                        {% if product.supplier_id %}
+                        {% if product.supplier_name %}
 
-                        Supplier
-                        {{ product.supplier_id }}
+                            {{ product.supplier_name }}
 
                         {% else %}
 
-                        <span>
-                            Not assigned
-                        </span>
+                            <span>
+                                Not assigned
+                            </span>
 
                         {% endif %}
 
@@ -343,7 +332,6 @@ Products
                     <td>
 
                         {{ product.stock_quantity }}
-
                         {{ product.unit }}
 
                     </td>
@@ -353,29 +341,25 @@ Products
 
                     <td>
 
-
                         {% if product.stock_quantity == 0 %}
 
-                        <span class="badge badge-danger">
-                            Out of Stock
-                        </span>
-
+                            <span class="badge badge-danger">
+                                Out of Stock
+                            </span>
 
                         {% elif product.stock_quantity <= product.reorder_level %}
 
-                        <span class="badge badge-warning">
-                            Low Stock
-                        </span>
-
+                            <span class="badge badge-warning">
+                                Low Stock
+                            </span>
 
                         {% else %}
 
-                        <span class="badge badge-success">
-                            Available
-                        </span>
+                            <span class="badge badge-success">
+                                Available
+                            </span>
 
                         {% endif %}
-
 
                     </td>
 
@@ -390,31 +374,44 @@ Products
                             <!-- EDIT -->
 
                             <a
-                                href="#"
+                                href="{{ url_for(
+                                    'edit_product_page',
+                                    product_id=product.product_id
+                                ) }}"
                                 class="icon-btn edit"
-                                title="Edit Product">
-
+                                title="Edit Product"
+                            >
                                 ✎
-
                             </a>
 
 
                             <!-- DELETE -->
 
-                            <a
-                                href="#"
-                                class="icon-btn delete"
-                                title="Delete Product">
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'delete_product_page',
+                                    product_id=product.product_id
+                                ) }}"
+                                style="display: inline;"
+                                onsubmit="return confirm(
+                                    'Are you sure you want to delete this product?'
+                                );"
+                            >
 
-                                🗑
+                                <button
+                                    type="submit"
+                                    class="icon-btn delete"
+                                    title="Delete Product"
+                                >
+                                    🗑
+                                </button>
 
-                            </a>
-
+                            </form>
 
                         </div>
 
                     </td>
-
 
                 </tr>
 
@@ -422,29 +419,24 @@ Products
                 {% else %}
 
 
-                <!-- NO PRODUCTS -->
-
                 <tr>
 
                     <td
                         colspan="9"
-                        class="empty-state">
-
+                        class="empty-state"
+                    >
 
                         <div>
                             📦
                         </div>
 
-
                         <h3>
                             No products found
                         </h3>
 
-
                         <p>
                             Add your first product to get started.
                         </p>
-
 
                     </td>
 
@@ -454,6 +446,35 @@ Products
                 {% endfor %}
 
 
+                <!-- SEARCH NO RESULT -->
+
+                <tr
+                    id="searchNoResult"
+                    style="display: none;"
+                >
+
+                    <td
+                        colspan="9"
+                        class="empty-state"
+                    >
+
+                        <div>
+                            🔍
+                        </div>
+
+                        <h3>
+                            No matching products
+                        </h3>
+
+                        <p>
+                            Try a different product name or barcode.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+
             </tbody>
 
         </table>
@@ -461,6 +482,106 @@ Products
     </div>
 
 </div>
+
+
+<!-- ================= SEARCH ================= -->
+
+<script>
+
+    const searchInput =
+        document.getElementById("productSearch");
+
+    const clearButton =
+        document.getElementById("clearSearch");
+
+    const rows =
+        document.querySelectorAll(".product-row");
+
+    const noResult =
+        document.getElementById("searchNoResult");
+
+
+    searchInput.addEventListener(
+        "input",
+        function () {
+
+            const searchText =
+                searchInput.value
+                    .toLowerCase()
+                    .trim();
+
+
+            let visibleRows = 0;
+
+
+            rows.forEach(
+                function (row) {
+
+                    const rowText =
+                        row.textContent
+                            .toLowerCase();
+
+
+                    if (
+                        rowText.includes(searchText)
+                    ) {
+
+                        row.style.display = "";
+
+                        visibleRows++;
+
+                    } else {
+
+                        row.style.display = "none";
+
+                    }
+
+                }
+            );
+
+
+            if (
+                searchText !== ""
+                &&
+                visibleRows === 0
+            ) {
+
+                noResult.style.display = "";
+
+            } else {
+
+                noResult.style.display = "none";
+
+            }
+
+        }
+    );
+
+
+    clearButton.addEventListener(
+        "click",
+        function () {
+
+            searchInput.value = "";
+
+
+            rows.forEach(
+                function (row) {
+
+                    row.style.display = "";
+
+                }
+            );
+
+
+            noResult.style.display = "none";
+
+            searchInput.focus();
+
+        }
+    );
+
+</script>
 
 
 {% endblock %}

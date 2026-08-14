@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Product - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Edit Product
+{% endblock %}
+
+{% block breadcrumb %}
+Products / Edit Product
+{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+    <div class="form-header">
+
+        <h2>Edit Product</h2>
+
+        <p>
+            Update the product information below.
+        </p>
+
+    </div>
+
+
+    <form
+        method="POST"
+        action="{{ url_for('edit_product_page', product_id=product.product_id) }}"
+    >
+
+        <div class="form-grid">
+
+
+            <!-- PRODUCT NAME -->
+
+            <div class="form-group">
+
+                <label>
+                    Product Name
+                </label>
+
+                <input
+                    type="text"
+                    name="product_name"
+                    value="{{ product.product_name }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- CATEGORY -->
+
+            <div class="form-group">
+
+                <label>
+                    Category
+                </label>
+
+                <select
+                    name="category_id"
+                    required
+                >
+
+                    {% for category in categories %}
+
+                    <option
+                        value="{{ category.category_id }}"
+                        {% if category.category_id == product.category_id %}
+                        selected
+                        {% endif %}
+                    >
+
+                        {{ category.category_name }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- SUPPLIER -->
+
+            <div class="form-group">
+
+                <label>
+                    Supplier
+                </label>
+
+                <select name="supplier_id">
+
+                    <option value="">
+                        Select Supplier
+                    </option>
+
+                    {% for supplier in suppliers %}
+
+                    <option
+                        value="{{ supplier.supplier_id }}"
+                        {% if supplier.supplier_id == product.supplier_id %}
+                        selected
+                        {% endif %}
+                    >
+
+                        {{ supplier.supplier_name }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- BARCODE -->
+
+            <div class="form-group">
+
+                <label>
+                    Barcode
+                </label>
+
+                <input
+                    type="text"
+                    name="barcode"
+                    value="{{ product.barcode or '' }}"
+                >
+
+            </div>
+
+
+            <!-- PURCHASE PRICE -->
+
+            <div class="form-group">
+
+                <label>
+                    Purchase Price
+                </label>
+
+                <input
+                    type="number"
+                    name="purchase_price"
+                    step="0.01"
+                    min="0"
+                    value="{{ product.purchase_price }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- SELLING PRICE -->
+
+            <div class="form-group">
+
+                <label>
+                    Selling Price
+                </label>
+
+                <input
+                    type="number"
+                    name="selling_price"
+                    step="0.01"
+                    min="0"
+                    value="{{ product.selling_price }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- STOCK -->
+
+            <div class="form-group">
+
+                <label>
+                    Stock Quantity
+                </label>
+
+                <input
+                    type="number"
+                    name="stock_quantity"
+                    min="0"
+                    value="{{ product.stock_quantity }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- REORDER LEVEL -->
+
+            <div class="form-group">
+
+                <label>
+                    Reorder Level
+                </label>
+
+                <input
+                    type="number"
+                    name="reorder_level"
+                    min="0"
+                    value="{{ product.reorder_level }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- UNIT -->
+
+            <div class="form-group">
+
+                <label>
+                    Unit
+                </label>
+
+                <select name="unit">
+
+                    <option value="piece"
+                        {% if product.unit == "piece" %}
+                        selected
+                        {% endif %}>
+                        Piece
+                    </option>
+
+                    <option value="kg"
+                        {% if product.unit == "kg" %}
+                        selected
+                        {% endif %}>
+                        Kilogram
+                    </option>
+
+                    <option value="g"
+                        {% if product.unit == "g" %}
+                        selected
+                        {% endif %}>
+                        Gram
+                    </option>
+
+                    <option value="liter"
+                        {% if product.unit == "liter" %}
+                        selected
+                        {% endif %}>
+                        Liter
+                    </option>
+
+                    <option value="ml"
+                        {% if product.unit == "ml" %}
+                        selected
+                        {% endif %}>
+                        Milliliter
+                    </option>
+
+                    <option value="box"
+                        {% if product.unit == "box" %}
+                        selected
+                        {% endif %}>
+                        Box
+                    </option>
+
+                    <option value="packet"
+                        {% if product.unit == "packet" %}
+                        selected
+                        {% endif %}>
+                        Packet
+                    </option>
+
+                    <option value="dozen"
+                        {% if product.unit == "dozen" %}
+                        selected
+                        {% endif %}>
+                        Dozen
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('products') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Update Product
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
