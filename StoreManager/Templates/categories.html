@@ -1,0 +1,569 @@
+{% extends "base.html" %}
+
+{% block title %}
+Categories - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Categories
+{% endblock %}
+
+{% block breadcrumb %}
+Categories
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Category Management
+        </h2>
+
+        <p>
+            Organize and manage your store product categories.
+        </p>
+
+    </div>
+
+
+    <!-- ADD CATEGORY -->
+
+    <a
+        href="{{ url_for('add_category_page') }}"
+        class="btn btn-primary"
+    >
+        + Add Category
+    </a>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- STAT CARDS -->
+<!-- ===================================================== -->
+
+<div class="stats-grid">
+
+
+    <!-- TOTAL CATEGORIES -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            📁
+        </div>
+
+        <div>
+
+            <span>
+                Total Categories
+            </span>
+
+            <h3>
+                {{ categories|length }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- SECOND CARD -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            📦
+        </div>
+
+        <div>
+
+            <span>
+                Product Categories
+            </span>
+
+            <h3>
+                {{ categories|length }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- THIRD CARD -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            ✓
+        </div>
+
+        <div>
+
+            <span>
+                Active Categories
+            </span>
+
+            <h3>
+                {{ categories|length }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- FOURTH CARD -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon red">
+            ⚠
+        </div>
+
+        <div>
+
+            <span>
+                Empty Categories
+            </span>
+
+            <h3>
+                0
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- CATEGORY TABLE -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+
+    <!-- TABLE HEADER -->
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                All Categories
+            </h2>
+
+            <p>
+                View and manage your product categories.
+            </p>
+
+        </div>
+
+
+        <div class="table-actions">
+
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <span>
+                    ⌕
+                </span>
+
+                <input
+                    type="text"
+                    id="categorySearch"
+                    placeholder="Search categories..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <!-- CLEAR -->
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                id="clearCategorySearch"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- TABLE -->
+    <!-- ================================================= -->
+
+    <div class="table-container">
+
+        <table id="categoriesTable">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        ID
+                    </th>
+
+                    <th>
+                        Category
+                    </th>
+
+                    <th>
+                        Description
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                {% for category in categories %}
+
+                <tr class="category-row">
+
+
+                    <!-- ID -->
+
+                    <td>
+
+                        #{{ category.category_id }}
+
+                    </td>
+
+
+
+                    <!-- CATEGORY -->
+
+                    <td>
+
+                        <div class="product-name">
+
+
+                            <div class="product-image">
+                                📁
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    {{ category.category_name }}
+                                </strong>
+
+                                <small>
+                                    Category
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+
+                    <!-- DESCRIPTION -->
+
+                    <td>
+
+                        {% if category.description %}
+
+                            {{ category.description }}
+
+                        {% else %}
+
+                            <span>
+                                No description
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div class="action-buttons">
+
+
+                            <!-- EDIT -->
+
+                            <a
+                                href="{{ url_for(
+                                    'edit_category_page',
+                                    category_id=category.category_id
+                                ) }}"
+                                class="icon-btn edit"
+                                title="Edit Category"
+                            >
+                                ✎
+                            </a>
+
+
+
+                            <!-- DELETE -->
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'delete_category_page',
+                                    category_id=category.category_id
+                                ) }}"
+                                style="display: inline;"
+
+                                onsubmit="return confirm(
+                                    'Are you sure you want to delete this category?'
+                                );"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="icon-btn delete"
+                                    title="Delete Category"
+                                >
+                                    🗑
+                                </button>
+
+                            </form>
+
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% else %}
+
+
+                <!-- NO CATEGORIES -->
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="empty-state"
+                    >
+
+                        <div>
+                            📁
+                        </div>
+
+                        <h3>
+                            No categories found
+                        </h3>
+
+                        <p>
+                            Add your first category to get started.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+
+                {% endfor %}
+
+
+                <!-- SEARCH NO RESULT -->
+
+                <tr
+                    id="categorySearchNoResult"
+                    style="display: none;"
+                >
+
+                    <td
+                        colspan="4"
+                        class="empty-state"
+                    >
+
+                        <div>
+                            🔍
+                        </div>
+
+                        <h3>
+                            No matching categories
+                        </h3>
+
+                        <p>
+                            Try a different category name.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- CATEGORY SEARCH JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+    const categorySearch =
+        document.getElementById(
+            "categorySearch"
+        );
+
+
+    const clearCategorySearch =
+        document.getElementById(
+            "clearCategorySearch"
+        );
+
+
+    const categoryRows =
+        document.querySelectorAll(
+            ".category-row"
+        );
+
+
+    const categoryNoResult =
+        document.getElementById(
+            "categorySearchNoResult"
+        );
+
+
+
+    /* SEARCH */
+
+    categorySearch.addEventListener(
+        "input",
+        function () {
+
+            const searchText =
+                categorySearch.value
+                    .toLowerCase()
+                    .trim();
+
+
+            let visibleRows = 0;
+
+
+            categoryRows.forEach(
+                function (row) {
+
+                    const rowText =
+                        row.textContent
+                            .toLowerCase();
+
+
+                    if (
+                        rowText.includes(
+                            searchText
+                        )
+                    ) {
+
+                        row.style.display = "";
+
+                        visibleRows++;
+
+                    }
+
+                    else {
+
+                        row.style.display = "none";
+
+                    }
+
+                }
+            );
+
+
+            if (
+                searchText !== ""
+                &&
+                visibleRows === 0
+            ) {
+
+                categoryNoResult.style.display = "";
+
+            }
+
+            else {
+
+                categoryNoResult.style.display = "none";
+
+            }
+
+        }
+    );
+
+
+
+    /* CLEAR SEARCH */
+
+    clearCategorySearch.addEventListener(
+        "click",
+        function () {
+
+            categorySearch.value = "";
+
+
+            categoryRows.forEach(
+                function (row) {
+
+                    row.style.display = "";
+
+                }
+            );
+
+
+            categoryNoResult.style.display = "none";
+
+
+            categorySearch.focus();
+
+        }
+    );
+
+</script>
+
+
+{% endblock %}

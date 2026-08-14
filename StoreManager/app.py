@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 
+from mysql.connector import IntegrityError
+
+
 from backend.productsdao import (
     get_products,
     add_product,
@@ -8,7 +11,16 @@ from backend.productsdao import (
     delete_product
 )
 
-from backend.categorydao import get_categories
+
+from backend.categorydao import (
+    get_categories,
+    get_category_by_id,
+    add_category,
+    update_category,
+    delete_category
+)
+
+
 from backend.supplierdao import get_suppliers
 
 
@@ -28,6 +40,7 @@ def home():
 # =========================================================
 # PRODUCTS
 # =========================================================
+
 
 @app.route("/products")
 def products():
@@ -66,6 +79,7 @@ def add_product_page():
         supplier_id = request.form.get(
             "supplier_id"
         )
+
 
         if supplier_id:
 
@@ -172,6 +186,7 @@ def edit_product_page(product_id):
             "supplier_id"
         )
 
+
         if supplier_id:
 
             supplier_id = int(
@@ -255,6 +270,145 @@ def delete_product_page(product_id):
     return redirect(
         url_for("products")
     )
+
+
+# =========================================================
+# CATEGORIES
+# =========================================================
+
+
+@app.route("/categories")
+def categories():
+
+    data = get_categories()
+
+    return render_template(
+        "categories.html",
+        categories=data
+    )
+
+
+# =========================================================
+# ADD CATEGORY
+# =========================================================
+
+@app.route(
+    "/categories/add",
+    methods=["GET", "POST"]
+)
+def add_category_page():
+
+    if request.method == "POST":
+
+        category_name = request.form[
+            "category_name"
+        ].strip()
+
+
+        description = request.form.get(
+            "description",
+            ""
+        ).strip()
+
+
+        add_category(
+            category_name,
+            description
+        )
+
+
+        return redirect(
+            url_for("categories")
+        )
+
+
+    return render_template(
+        "add_category.html"
+    )
+
+
+# =========================================================
+# EDIT CATEGORY
+# =========================================================
+
+@app.route(
+    "/categories/edit/<int:category_id>",
+    methods=["GET", "POST"]
+)
+def edit_category_page(category_id):
+
+    category = get_category_by_id(
+        category_id
+    )
+
+
+    if category is None:
+
+        return "Category not found", 404
+
+
+    if request.method == "POST":
+
+        category_name = request.form[
+            "category_name"
+        ].strip()
+
+
+        description = request.form.get(
+            "description",
+            ""
+        ).strip()
+
+
+        update_category(
+            category_id,
+            category_name,
+            description
+        )
+
+
+        return redirect(
+            url_for("categories")
+        )
+
+
+    return render_template(
+        "edit_category.html",
+        category=category
+    )
+
+
+# =========================================================
+# DELETE CATEGORY
+# =========================================================
+
+@app.route(
+    "/categories/delete/<int:category_id>",
+    methods=["POST"]
+)
+def delete_category_page(category_id):
+
+    try:
+
+        delete_category(
+            category_id
+        )
+
+
+        return redirect(
+            url_for("categories")
+        )
+
+
+    except IntegrityError:
+
+        return (
+            "Cannot delete this category because "
+            "one or more products are using it. "
+            "Change the products to another category "
+            "before deleting this category.",
+            400
+        )
 
 
 # =========================================================

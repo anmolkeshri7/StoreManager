@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Category - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Add Category
+{% endblock %}
+
+{% block breadcrumb %}
+Categories / Add Category
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Add New Category
+        </h2>
+
+        <p>
+            Create a new category for your store products.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('categories') }}"
+        class="btn btn-secondary"
+    >
+        ← Back to Categories
+    </a>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- FORM CARD -->
+<!-- ===================================================== -->
+
+<div class="form-card">
+
+
+    <!-- FORM HEADER -->
+
+    <div class="form-header">
+
+        <h2>
+            Category Information
+        </h2>
+
+        <p>
+            Enter the details of the new category.
+        </p>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- FORM -->
+    <!-- ================================================= -->
+
+    <form
+        method="POST"
+        action="{{ url_for('add_category_page') }}"
+    >
+
+
+        <div class="form-grid">
+
+
+            <!-- CATEGORY NAME -->
+
+            <div class="form-group">
+
+                <label for="category_name">
+                    Category Name
+                </label>
+
+                <input
+                    type="text"
+                    id="category_name"
+                    name="category_name"
+                    placeholder="Enter category name"
+                    maxlength="100"
+                    required
+                    autofocus
+                >
+
+            </div>
+
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="form-group">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <input
+                    type="text"
+                    id="description"
+                    name="description"
+                    placeholder="Enter category description"
+                    maxlength="255"
+                >
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- FORM ACTIONS -->
+        <!-- ================================================= -->
+
+        <div class="form-actions">
+
+
+            <!-- CANCEL -->
+
+            <a
+                href="{{ url_for('categories') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+
+
+            <!-- ADD -->
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Add Category
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+{% endblock %}

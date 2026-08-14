@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Category - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Edit Category
+{% endblock %}
+
+{% block breadcrumb %}
+Categories / Edit Category
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Edit Category
+        </h2>
+
+        <p>
+            Update the category information below.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('categories') }}"
+        class="btn btn-secondary"
+    >
+        ← Back to Categories
+    </a>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- FORM CARD -->
+<!-- ===================================================== -->
+
+<div class="form-card">
+
+
+    <!-- FORM HEADER -->
+
+    <div class="form-header">
+
+        <h2>
+            Category Information
+        </h2>
+
+        <p>
+            Modify the details of this category.
+        </p>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- FORM -->
+    <!-- ================================================= -->
+
+    <form
+        method="POST"
+        action="{{ url_for(
+            'edit_category_page',
+            category_id=category.category_id
+        ) }}"
+    >
+
+
+        <div class="form-grid">
+
+
+            <!-- CATEGORY NAME -->
+
+            <div class="form-group">
+
+                <label for="category_name">
+                    Category Name
+                </label>
+
+                <input
+                    type="text"
+                    id="category_name"
+                    name="category_name"
+                    value="{{ category.category_name }}"
+                    maxlength="100"
+                    required
+                    autofocus
+                >
+
+            </div>
+
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="form-group">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <input
+                    type="text"
+                    id="description"
+                    name="description"
+                    value="{{ category.description or '' }}"
+                    maxlength="255"
+                >
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- FORM ACTIONS -->
+        <!-- ================================================= -->
+
+        <div class="form-actions">
+
+
+            <!-- CANCEL -->
+
+            <a
+                href="{{ url_for('categories') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+
+
+            <!-- UPDATE -->
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Update Category
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+{% endblock %}
