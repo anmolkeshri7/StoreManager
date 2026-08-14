@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Supplier - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Edit Supplier
+{% endblock %}
+
+{% block breadcrumb %}
+Suppliers / Edit Supplier
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Edit Supplier
+        </h2>
+
+        <p>
+            Update the supplier's contact information.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('suppliers') }}"
+        class="btn btn-secondary"
+    >
+        ← Back to Suppliers
+    </a>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- FORM CARD -->
+<!-- ===================================================== -->
+
+<div class="form-card">
+
+
+    <!-- FORM HEADER -->
+
+    <div class="form-header">
+
+        <h2>
+            Supplier Information
+        </h2>
+
+        <p>
+            Modify the details of this supplier.
+        </p>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- FORM -->
+    <!-- ================================================= -->
+
+    <form
+        method="POST"
+        action="{{ url_for(
+            'edit_supplier_page',
+            supplier_id=supplier.supplier_id
+        ) }}"
+    >
+
+
+        <div class="form-grid">
+
+
+            <!-- SUPPLIER NAME -->
+
+            <div class="form-group">
+
+                <label for="supplier_name">
+                    Supplier Name
+                </label>
+
+                <input
+                    type="text"
+                    id="supplier_name"
+                    name="supplier_name"
+                    value="{{ supplier.supplier_name }}"
+                    maxlength="150"
+                    required
+                    autofocus
+                >
+
+            </div>
+
+
+
+            <!-- PHONE -->
+
+            <div class="form-group">
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value="{{ supplier.phone or '' }}"
+                    maxlength="15"
+                >
+
+            </div>
+
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ supplier.email or '' }}"
+                    maxlength="100"
+                >
+
+            </div>
+
+
+
+            <!-- ADDRESS -->
+
+            <div class="form-group full-width">
+
+                <label for="address">
+                    Address
+                </label>
+
+                <textarea
+                    id="address"
+                    name="address"
+                    maxlength="255"
+                    rows="4"
+                    placeholder="Enter supplier address"
+                >{{ supplier.address or '' }}</textarea>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- FORM ACTIONS -->
+        <!-- ================================================= -->
+
+        <div class="form-actions">
+
+
+            <!-- CANCEL -->
+
+            <a
+                href="{{ url_for('suppliers') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+
+
+            <!-- UPDATE -->
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Update Supplier
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+{% endblock %}
