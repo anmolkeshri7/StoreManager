@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+
+{% block title %}
+Purchase #{{ purchase.purchase_id }} - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Purchase Details
+{% endblock %}
+
+{% block breadcrumb %}
+Purchases / Purchase #{{ purchase.purchase_id }}
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Purchase #{{ purchase.purchase_id }}
+        </h2>
+
+        <p>
+            Detailed information about this purchase.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('purchases') }}"
+        class="btn btn-secondary"
+    >
+        ← Back to Purchases
+    </a>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- PURCHASE INFORMATION -->
+<!-- ===================================================== -->
+
+<div class="stats-grid">
+
+
+    <!-- PURCHASE ID -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            #
+        </div>
+
+        <div>
+
+            <span>
+                Purchase ID
+            </span>
+
+            <h3>
+                #{{ purchase.purchase_id }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SUPPLIER -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            🚚
+        </div>
+
+        <div>
+
+            <span>
+                Supplier
+            </span>
+
+            <h3>
+                {{ purchase.supplier_name or "Unknown" }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- DATE -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            📅
+        </div>
+
+        <div>
+
+            <span>
+                Purchase Date
+            </span>
+
+            <h3>
+                {{ purchase.purchase_date }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- TOTAL -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon red">
+            ₹
+        </div>
+
+        <div>
+
+            <span>
+                Total Amount
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    purchase.total_amount or 0
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- PURCHASE ITEMS -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+
+    <!-- HEADER -->
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Purchased Products
+            </h2>
+
+            <p>
+                Products included in this purchase.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- TABLE -->
+
+    <div class="table-container">
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Product
+                    </th>
+
+                    <th>
+                        Quantity
+                    </th>
+
+                    <th>
+                        Purchase Price
+                    </th>
+
+                    <th>
+                        Subtotal
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                {% for item in details %}
+
+                <tr>
+
+
+                    <!-- DETAIL ID -->
+
+                    <td>
+
+                        {{ loop.index }}
+
+                    </td>
+
+
+
+                    <!-- PRODUCT -->
+
+                    <td>
+
+                        <div class="product-name">
+
+                            <div class="product-image">
+                                📦
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    {{ item.product_name
+                                    or "Unknown Product" }}
+                                </strong>
+
+                                <small>
+                                    Product ID:
+                                    {{ item.product_id }}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+
+                    <!-- QUANTITY -->
+
+                    <td>
+
+                        <strong>
+                            {{ item.quantity }}
+                        </strong>
+
+                    </td>
+
+
+
+                    <!-- PURCHASE PRICE -->
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(
+                            item.purchase_price
+                        ) }}
+
+                    </td>
+
+
+
+                    <!-- SUBTOTAL -->
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                item.subtotal
+                            ) }}
+                        </strong>
+
+                    </td>
+
+
+                </tr>
+
+
+                {% else %}
+
+
+                <!-- NO ITEMS -->
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="empty-state"
+                    >
+
+                        <div>
+                            📦
+                        </div>
+
+                        <h3>
+                            No purchase items found
+                        </h3>
+
+                    </td>
+
+                </tr>
+
+
+                {% endfor %}
+
+
+            </tbody>
+
+
+            <!-- TOTAL -->
+
+            <tfoot>
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        style="text-align: right;"
+                    >
+
+                        <strong>
+                            Total:
+                        </strong>
+
+                    </td>
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                purchase.total_amount or 0
+                            ) }}
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+            </tfoot>
+
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- ACTIONS -->
+<!-- ===================================================== -->
+
+<div class="form-actions">
+
+
+    <a
+        href="{{ url_for('purchases') }}"
+        class="btn btn-secondary"
+    >
+        ← Back
+    </a>
+
+
+    <form
+        method="POST"
+        action="{{ url_for(
+            'delete_purchase_page',
+            purchase_id=purchase.purchase_id
+        ) }}"
+
+        onsubmit="return confirm(
+            'Deleting this purchase will also reduce the stock added by this purchase. Are you sure?'
+        );"
+    >
+
+        <button
+            type="submit"
+            class="btn btn-danger"
+        >
+            Delete Purchase
+        </button>
+
+    </form>
+
+</div>
+
+
+{% endblock %}

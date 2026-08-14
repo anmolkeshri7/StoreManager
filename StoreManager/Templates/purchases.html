@@ -1,0 +1,567 @@
+{% extends "base.html" %}
+
+{% block title %}
+Purchases - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Purchases
+{% endblock %}
+
+{% block breadcrumb %}
+Purchases
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Purchase Management
+        </h2>
+
+        <p>
+            Manage supplier purchases and inventory stock.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('add_purchase_page') }}"
+        class="btn btn-primary"
+    >
+        + Add Purchase
+    </a>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- STAT CARDS -->
+<!-- ===================================================== -->
+
+<div class="stats-grid">
+
+
+    <!-- TOTAL PURCHASES -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            🛒
+        </div>
+
+        <div>
+
+            <span>
+                Total Purchases
+            </span>
+
+            <h3>
+                {{ purchases|length }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOTAL VALUE -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            ₹
+        </div>
+
+        <div>
+
+            <span>
+                Purchase Value
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    purchases
+                    |sum(attribute="total_amount")
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUPPLIERS -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            🚚
+        </div>
+
+        <div>
+
+            <span>
+                Supplier Purchases
+            </span>
+
+            <h3>
+                {{ purchases|length }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATUS -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon red">
+            ✓
+        </div>
+
+        <div>
+
+            <span>
+                Recorded
+            </span>
+
+            <h3>
+                {{ purchases|length }}
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- PURCHASE TABLE -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+
+    <!-- TABLE HEADER -->
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Purchase History
+            </h2>
+
+            <p>
+                View all purchases made from suppliers.
+            </p>
+
+        </div>
+
+
+        <div class="table-actions">
+
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <span>
+                    ⌕
+                </span>
+
+                <input
+                    type="text"
+                    id="purchaseSearch"
+                    placeholder="Search purchases..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <!-- CLEAR -->
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                id="clearPurchaseSearch"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- TABLE -->
+    <!-- ================================================= -->
+
+    <div class="table-container">
+
+        <table id="purchasesTable">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Purchase ID
+                    </th>
+
+                    <th>
+                        Supplier
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Total Amount
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for purchase in purchases %}
+
+                <tr class="purchase-row">
+
+
+                    <!-- PURCHASE ID -->
+
+                    <td>
+
+                        <strong>
+                            #{{ purchase.purchase_id }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- SUPPLIER -->
+
+                    <td>
+
+                        <div class="product-name">
+
+                            <div class="product-image">
+                                🚚
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    {{ purchase.supplier_name
+                                    or "Unknown Supplier" }}
+                                </strong>
+
+                                <small>
+                                    Supplier
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- DATE -->
+
+                    <td>
+
+                        {{ purchase.purchase_date }}
+
+                    </td>
+
+
+                    <!-- TOTAL -->
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                purchase.total_amount
+                                or 0
+                            ) }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div class="action-buttons">
+
+
+                            <!-- VIEW -->
+
+                            <a
+                                href="{{ url_for(
+                                    'purchase_details',
+                                    purchase_id=purchase.purchase_id
+                                ) }}"
+                                class="icon-btn"
+                                title="View Purchase"
+                            >
+                                👁
+                            </a>
+
+
+                            <!-- DELETE -->
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'delete_purchase_page',
+                                    purchase_id=purchase.purchase_id
+                                ) }}"
+                                style="display: inline;"
+
+                                onsubmit="return confirm(
+                                    'Deleting this purchase will reduce the stock that was added by this purchase. Continue?'
+                                );"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="icon-btn delete"
+                                    title="Delete Purchase"
+                                >
+                                    🗑
+                                </button>
+
+                            </form>
+
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% else %}
+
+
+                <!-- NO PURCHASES -->
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="empty-state"
+                    >
+
+                        <div>
+                            🛒
+                        </div>
+
+                        <h3>
+                            No purchases found
+                        </h3>
+
+                        <p>
+                            Add your first purchase to start managing inventory.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+
+                {% endfor %}
+
+
+                <!-- SEARCH NO RESULT -->
+
+                <tr
+                    id="purchaseSearchNoResult"
+                    style="display: none;"
+                >
+
+                    <td
+                        colspan="5"
+                        class="empty-state"
+                    >
+
+                        <div>
+                            🔍
+                        </div>
+
+                        <h3>
+                            No matching purchases
+                        </h3>
+
+                        <p>
+                            Try a different purchase ID or supplier name.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SEARCH JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+    const purchaseSearch =
+        document.getElementById(
+            "purchaseSearch"
+        );
+
+
+    const clearPurchaseSearch =
+        document.getElementById(
+            "clearPurchaseSearch"
+        );
+
+
+    const purchaseRows =
+        document.querySelectorAll(
+            ".purchase-row"
+        );
+
+
+    const purchaseNoResult =
+        document.getElementById(
+            "purchaseSearchNoResult"
+        );
+
+
+    /* SEARCH */
+
+    purchaseSearch.addEventListener(
+        "input",
+        function () {
+
+            const searchText =
+                purchaseSearch.value
+                    .toLowerCase()
+                    .trim();
+
+
+            let visibleRows = 0;
+
+
+            purchaseRows.forEach(
+                function (row) {
+
+                    const rowText =
+                        row.textContent
+                            .toLowerCase();
+
+
+                    if (
+                        rowText.includes(
+                            searchText
+                        )
+                    ) {
+
+                        row.style.display = "";
+
+                        visibleRows++;
+
+                    }
+
+                    else {
+
+                        row.style.display = "none";
+
+                    }
+
+                }
+            );
+
+
+            if (
+                searchText !== ""
+                &&
+                visibleRows === 0
+            ) {
+
+                purchaseNoResult.style.display = "";
+
+            }
+
+            else {
+
+                purchaseNoResult.style.display = "none";
+
+            }
+
+        }
+    );
+
+
+    /* CLEAR SEARCH */
+
+    clearPurchaseSearch.addEventListener(
+        "click",
+        function () {
+
+            purchaseSearch.value = "";
+
+
+            purchaseRows.forEach(
+                function (row) {
+
+                    row.style.display = "";
+
+                }
+            );
+
+
+            purchaseNoResult.style.display = "none";
+
+
+            purchaseSearch.focus();
+
+        }
+    );
+
+</script>
+
+
+{% endblock %}

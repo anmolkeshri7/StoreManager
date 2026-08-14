@@ -33,6 +33,14 @@ from backend.customerdao import (
     delete_customer
 )
 
+from backend.purchasedao import (
+    get_purchases,
+    get_purchase_by_id,
+    get_purchase_details,
+    create_purchase,
+    delete_purchase
+)
+
 
 app = Flask(__name__)
 
@@ -51,9 +59,6 @@ def home():
 # PRODUCT ROUTES
 # =========================================================
 
-
-# ---------------- VIEW PRODUCTS ----------------
-
 @app.route("/products")
 def products():
 
@@ -65,8 +70,6 @@ def products():
     )
 
 
-# ---------------- ADD PRODUCT ----------------
-
 @app.route(
     "/products/add",
     methods=["GET", "POST"]
@@ -74,7 +77,6 @@ def products():
 def add_product_page():
 
     categories = get_categories()
-
     suppliers = get_suppliers()
 
     if request.method == "POST":
@@ -94,9 +96,7 @@ def add_product_page():
         else:
             supplier_id = None
 
-        barcode = request.form.get(
-            "barcode"
-        )
+        barcode = request.form.get("barcode")
 
         purchase_price = float(
             request.form["purchase_price"]
@@ -139,8 +139,6 @@ def add_product_page():
     )
 
 
-# ---------------- EDIT PRODUCT ----------------
-
 @app.route(
     "/products/edit/<int:product_id>",
     methods=["GET", "POST"]
@@ -155,7 +153,6 @@ def edit_product_page(product_id):
         return "Product not found", 404
 
     categories = get_categories()
-
     suppliers = get_suppliers()
 
     if request.method == "POST":
@@ -177,9 +174,7 @@ def edit_product_page(product_id):
         else:
             supplier_id = None
 
-        barcode = request.form.get(
-            "barcode"
-        )
+        barcode = request.form.get("barcode")
 
         purchase_price = float(
             request.form["purchase_price"]
@@ -224,17 +219,13 @@ def edit_product_page(product_id):
     )
 
 
-# ---------------- DELETE PRODUCT ----------------
-
 @app.route(
     "/products/delete/<int:product_id>",
     methods=["POST"]
 )
 def delete_product_page(product_id):
 
-    delete_product(
-        product_id
-    )
+    delete_product(product_id)
 
     return redirect(
         url_for("products")
@@ -244,9 +235,6 @@ def delete_product_page(product_id):
 # =========================================================
 # CATEGORY ROUTES
 # =========================================================
-
-
-# ---------------- VIEW CATEGORIES ----------------
 
 @app.route("/categories")
 def categories():
@@ -258,8 +246,6 @@ def categories():
         categories=data
     )
 
-
-# ---------------- ADD CATEGORY ----------------
 
 @app.route(
     "/categories/add",
@@ -291,8 +277,6 @@ def add_category_page():
         "add_category.html"
     )
 
-
-# ---------------- EDIT CATEGORY ----------------
 
 @app.route(
     "/categories/edit/<int:category_id>",
@@ -334,8 +318,6 @@ def edit_category_page(category_id):
     )
 
 
-# ---------------- DELETE CATEGORY ----------------
-
 @app.route(
     "/categories/delete/<int:category_id>",
     methods=["POST"]
@@ -344,9 +326,7 @@ def delete_category_page(category_id):
 
     try:
 
-        delete_category(
-            category_id
-        )
+        delete_category(category_id)
 
         return redirect(
             url_for("categories")
@@ -367,9 +347,6 @@ def delete_category_page(category_id):
 # SUPPLIER ROUTES
 # =========================================================
 
-
-# ---------------- VIEW SUPPLIERS ----------------
-
 @app.route("/suppliers")
 def suppliers():
 
@@ -380,8 +357,6 @@ def suppliers():
         suppliers=data
     )
 
-
-# ---------------- ADD SUPPLIER ----------------
 
 @app.route(
     "/suppliers/add",
@@ -425,8 +400,6 @@ def add_supplier_page():
         "add_supplier.html"
     )
 
-
-# ---------------- EDIT SUPPLIER ----------------
 
 @app.route(
     "/suppliers/edit/<int:supplier_id>",
@@ -480,8 +453,6 @@ def edit_supplier_page(supplier_id):
     )
 
 
-# ---------------- DELETE SUPPLIER ----------------
-
 @app.route(
     "/suppliers/delete/<int:supplier_id>",
     methods=["POST"]
@@ -490,9 +461,7 @@ def delete_supplier_page(supplier_id):
 
     try:
 
-        delete_supplier(
-            supplier_id
-        )
+        delete_supplier(supplier_id)
 
         return redirect(
             url_for("suppliers")
@@ -513,9 +482,6 @@ def delete_supplier_page(supplier_id):
 # CUSTOMER ROUTES
 # =========================================================
 
-
-# ---------------- VIEW CUSTOMERS ----------------
-
 @app.route("/customers")
 def customers():
 
@@ -526,8 +492,6 @@ def customers():
         customers=data
     )
 
-
-# ---------------- ADD CUSTOMER ----------------
 
 @app.route(
     "/customers/add",
@@ -571,8 +535,6 @@ def add_customer_page():
         "add_customer.html"
     )
 
-
-# ---------------- EDIT CUSTOMER ----------------
 
 @app.route(
     "/customers/edit/<int:customer_id>",
@@ -626,8 +588,6 @@ def edit_customer_page(customer_id):
     )
 
 
-# ---------------- DELETE CUSTOMER ----------------
-
 @app.route(
     "/customers/delete/<int:customer_id>",
     methods=["POST"]
@@ -636,9 +596,7 @@ def delete_customer_page(customer_id):
 
     try:
 
-        delete_customer(
-            customer_id
-        )
+        delete_customer(customer_id)
 
         return redirect(
             url_for("customers")
@@ -651,6 +609,176 @@ def delete_customer_page(customer_id):
             "this customer has existing sales records.",
             400
         )
+
+
+# =========================================================
+# PURCHASE ROUTES
+# =========================================================
+
+# ---------------- VIEW PURCHASES ----------------
+
+@app.route("/purchases")
+def purchases():
+
+    data = get_purchases()
+
+    return render_template(
+        "purchases.html",
+        purchases=data
+    )
+
+
+# ---------------- VIEW PURCHASE DETAILS ----------------
+
+@app.route(
+    "/purchases/<int:purchase_id>"
+)
+def purchase_details(purchase_id):
+
+    purchase = get_purchase_by_id(
+        purchase_id
+    )
+
+    if purchase is None:
+        return "Purchase not found", 404
+
+    details = get_purchase_details(
+        purchase_id
+    )
+
+    return render_template(
+        "purchase_details.html",
+        purchase=purchase,
+        details=details
+    )
+
+
+# ---------------- ADD PURCHASE ----------------
+
+@app.route(
+    "/purchases/add",
+    methods=["GET", "POST"]
+)
+def add_purchase_page():
+
+    suppliers = get_suppliers()
+
+    products = get_products()
+
+
+    if request.method == "POST":
+
+        supplier_id = int(
+            request.form["supplier_id"]
+        )
+
+        employee_id = request.form.get(
+            "employee_id"
+        )
+
+        if employee_id:
+            employee_id = int(employee_id)
+        else:
+            employee_id = None
+
+
+        product_ids = request.form.getlist(
+            "product_id[]"
+        )
+
+        quantities = request.form.getlist(
+            "quantity[]"
+        )
+
+        purchase_prices = request.form.getlist(
+            "purchase_price[]"
+        )
+
+
+        items = []
+
+
+        for i in range(
+            len(product_ids)
+        ):
+
+            if not product_ids[i]:
+                continue
+
+            quantity = int(
+                quantities[i]
+            )
+
+            purchase_price = float(
+                purchase_prices[i]
+            )
+
+
+            if quantity <= 0:
+                continue
+
+
+            if purchase_price < 0:
+                continue
+
+
+            items.append(
+                {
+                    "product_id": int(
+                        product_ids[i]
+                    ),
+
+                    "quantity": quantity,
+
+                    "purchase_price":
+                        purchase_price
+                }
+            )
+
+
+        if not items:
+
+            return (
+                "Please add at least one "
+                "valid product.",
+                400
+            )
+
+
+        create_purchase(
+            supplier_id,
+            employee_id,
+            items
+        )
+
+
+        return redirect(
+            url_for("purchases")
+        )
+
+
+    return render_template(
+        "add_purchase.html",
+        suppliers=suppliers,
+        products=products
+    )
+
+
+# ---------------- DELETE PURCHASE ----------------
+
+@app.route(
+    "/purchases/delete/<int:purchase_id>",
+    methods=["POST"]
+)
+def delete_purchase_page(purchase_id):
+
+    delete_purchase(
+        purchase_id
+    )
+
+    return redirect(
+        url_for("purchases")
+    )
 
 
 # =========================================================
