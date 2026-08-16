@@ -2,151 +2,423 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>{% block title %}Store Manager{% endblock %}</title>
+    <title>
+        {% block title %}
+        Store Manager
+        {% endblock %}
+    </title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- ================================================= -->
+    <!-- MAIN CSS -->
+    <!-- ================================================= -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/style.css'
+        ) }}"
+    >
+
+
+    <!-- ================================================= -->
+    <!-- FONT AWESOME ICONS -->
+    <!-- ================================================= -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
 </head>
+
 
 <body>
 
-    <!-- ================= SIDEBAR ================= -->
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ================================================= -->
 
     <aside class="sidebar">
 
+
+        <!-- ================= LOGO ================= -->
+
         <div class="logo">
-            <div class="logo-icon">SM</div>
+
+            <div class="logo-icon">
+                SM
+            </div>
 
             <div>
-                <h2>Store Manager</h2>
-                <span>Management System</span>
+
+                <h2>
+                    Store Manager
+                </h2>
+
+                <span>
+                    Management System
+                </span>
+
             </div>
+
         </div>
+
+
+        <!-- ================= NAVIGATION ================= -->
 
         <nav class="sidebar-nav">
 
-            <p class="menu-title">MAIN</p>
 
-            <a href="/" class="nav-item">
-                <span>▦</span>
-                Dashboard
+            <!-- ================================================= -->
+            <!-- MAIN -->
+            <!-- ================================================= -->
+
+            <p class="menu-title">
+                MAIN
+            </p>
+
+
+            <!-- DASHBOARD -->
+
+            <a
+                href="/"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-house"></i>
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+
             </a>
 
-            <a href="/products" class="nav-item">
-                <span>📦</span>
-                Products
+
+            <!-- PRODUCTS -->
+
+            <a
+                href="/products"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-box"></i>
+                </span>
+
+                <span>
+                    Products
+                </span>
+
             </a>
 
-            <a href="/customers" class="nav-item">
-                <span>👥</span>
-                Customers
+
+            <!-- CUSTOMERS -->
+
+            <a
+                href="/customers"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-users"></i>
+                </span>
+
+                <span>
+                    Customers
+                </span>
+
             </a>
 
-            <a href="/suppliers" class="nav-item">
-                <span>🚚</span>
-                Suppliers
+
+            <!-- SUPPLIERS -->
+
+            <a
+                href="/suppliers"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-truck"></i>
+                </span>
+
+                <span>
+                    Suppliers
+                </span>
+
             </a>
 
-            <p class="menu-title">TRANSACTIONS</p>
 
-            <a href="/sales" class="nav-item">
-                <span>💰</span>
-                Sales
+
+            <!-- ================================================= -->
+            <!-- TRANSACTIONS -->
+            <!-- ================================================= -->
+
+            <p class="menu-title">
+                TRANSACTIONS
+            </p>
+
+
+            <!-- SALES -->
+
+            <a
+                href="/sales"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </span>
+
+                <span>
+                    Sales
+                </span>
+
             </a>
 
-            <a href="/purchases" class="nav-item">
-                <span>🛒</span>
-                Purchases
+
+            <!-- PURCHASES -->
+
+            <a
+                href="/purchases"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </span>
+
+                <span>
+                    Purchases
+                </span>
+
             </a>
 
-            <p class="menu-title">MANAGEMENT</p>
 
-            <a href="/employees" class="nav-item">
-                <span>👨‍💼</span>
-                Employees
+
+            <!-- ================================================= -->
+            <!-- MANAGEMENT -->
+            <!-- ================================================= -->
+
+            <p class="menu-title">
+                MANAGEMENT
+            </p>
+
+
+            <!-- EMPLOYEES -->
+
+            <a
+                href="/employees"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                </span>
+
+                <span>
+                    Employees
+                </span>
+
             </a>
 
-            <a href="/reports" class="nav-item">
-                <span>📊</span>
-                Reports
+
+            <!-- REPORTS -->
+
+            <a
+                href="/reports"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-chart-column"></i>
+                </span>
+
+                <span>
+                    Reports
+                </span>
+
             </a>
+
 
         </nav>
 
+
+
+        <!-- ================================================= -->
+        <!-- SIDEBAR BOTTOM -->
+        <!-- ================================================= -->
+
         <div class="sidebar-bottom">
 
-            <a href="#" class="nav-item">
-                <span>⚙</span>
-                Settings
+
+            <!-- SETTINGS -->
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-gear"></i>
+                </span>
+
+                <span>
+                    Settings
+                </span>
+
             </a>
 
-            <a href="#" class="nav-item logout">
-                <span>↪</span>
-                Logout
+
+            <!-- LOGOUT -->
+
+            <a
+                href="#"
+                class="nav-item logout"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </span>
+
+                <span>
+                    Logout
+                </span>
+
             </a>
+
 
         </div>
+
 
     </aside>
 
 
-    <!-- ================= MAIN CONTENT ================= -->
+
+    <!-- ================================================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ================================================= -->
 
     <main class="main-content">
 
+
+        <!-- ================================================= -->
         <!-- TOP NAVBAR -->
+        <!-- ================================================= -->
 
         <header class="topbar">
 
+
+            <!-- PAGE TITLE -->
+
             <div>
-                <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+
+                <h1>
+                    {% block page_title %}
+                    Dashboard
+                    {% endblock %}
+                </h1>
+
 
                 <p class="breadcrumb">
-                    Store Manager / {% block breadcrumb %}Dashboard{% endblock %}
+
+                    Store Manager /
+
+                    {% block breadcrumb %}
+                    Dashboard
+                    {% endblock %}
+
                 </p>
+
             </div>
+
+
+
+            <!-- ================================================= -->
+            <!-- TOP RIGHT -->
+            <!-- ================================================= -->
 
             <div class="topbar-right">
 
-                <button class="notification">
-                    🔔
-                    <span class="notification-dot"></span>
+
+                <!-- NOTIFICATIONS -->
+
+                <button
+                    class="notification"
+                    title="Notifications"
+                >
+
+                    <i class="fa-regular fa-bell"></i>
+
+                    <span
+                        class="notification-dot"
+                    ></span>
+
                 </button>
+
+
+
+                <!-- PROFILE -->
 
                 <div class="profile">
 
+
                     <div class="profile-avatar">
-                        A
+
+                        <i class="fa-solid fa-user"></i>
+
                     </div>
 
+
                     <div class="profile-info">
-                        <strong>Admin</strong>
-                        <span>Administrator</span>
+
+                        <strong>
+                            Admin
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
                     </div>
+
 
                 </div>
 
+
             </div>
+
 
         </header>
 
 
+
+        <!-- ================================================= -->
         <!-- PAGE CONTENT -->
+        <!-- ================================================= -->
 
         <section class="page-content">
 
             {% block content %}
-
             {% endblock %}
 
         </section>
 
+
     </main>
+
 
 </body>
 

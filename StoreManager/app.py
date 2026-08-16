@@ -74,6 +74,21 @@ from backend.dashboarddao import (
 )
 
 
+from backend.reportsdao import (
+    get_sales_summary,
+    get_profit_summary,
+    get_daily_sales,
+    get_top_selling_products as get_reports_top_selling_products,
+    get_sales_by_category as get_reports_sales_by_category,
+    get_customer_sales,
+    get_employee_sales,
+    get_purchase_summary,
+    get_supplier_purchases,
+    get_daily_purchases,
+    get_inventory_summary
+)
+
+
 # =========================================================
 # FLASK APP
 # =========================================================
@@ -1512,6 +1527,93 @@ def delete_sale_page(sale_id):
 
     return redirect(
         url_for("sales")
+    )
+
+
+# =========================================================
+# REPORTS ROUTES
+# =========================================================
+
+@app.route("/reports")
+def reports():
+
+    start_date = request.args.get(
+        "start_date",
+        ""
+    ).strip()
+
+    end_date = request.args.get(
+        "end_date",
+        ""
+    ).strip()
+
+    sales_summary = get_sales_summary(
+        start_date or None,
+        end_date or None
+    )
+
+    profit_summary = get_profit_summary(
+        start_date or None,
+        end_date or None
+    )
+
+    daily_sales = get_daily_sales(
+        start_date or None,
+        end_date or None
+    )
+
+    top_selling_products = get_reports_top_selling_products(
+        start_date or None,
+        end_date or None
+    )
+
+    sales_by_category = get_reports_sales_by_category(
+        start_date or None,
+        end_date or None
+    )
+
+    customer_sales = get_customer_sales(
+        start_date or None,
+        end_date or None
+    )
+
+    employee_sales = get_employee_sales(
+        start_date or None,
+        end_date or None
+    )
+
+    purchase_summary = get_purchase_summary(
+        start_date or None,
+        end_date or None
+    )
+
+    supplier_purchases = get_supplier_purchases(
+        start_date or None,
+        end_date or None
+    )
+
+    daily_purchases = get_daily_purchases(
+        start_date or None,
+        end_date or None
+    )
+
+    inventory_summary = get_inventory_summary()
+
+    return render_template(
+        "reports.html",
+        start_date=start_date,
+        end_date=end_date,
+        sales_summary=sales_summary,
+        profit_summary=profit_summary,
+        daily_sales=daily_sales,
+        top_selling_products=top_selling_products,
+        sales_by_category=sales_by_category,
+        customer_sales=customer_sales,
+        employee_sales=employee_sales,
+        purchase_summary=purchase_summary,
+        supplier_purchases=supplier_purchases,
+        daily_purchases=daily_purchases,
+        inventory_summary=inventory_summary
     )
 
 

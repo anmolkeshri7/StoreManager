@@ -1,0 +1,1329 @@
+{% extends "base.html" %}
+
+{% block title %}
+Reports & Analytics - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Reports & Analytics
+{% endblock %}
+
+{% block breadcrumb %}
+Reports
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            📊 Reports & Analytics
+        </h2>
+
+        <p>
+            Analyze sales, purchases, inventory and profitability.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- DATE FILTER -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                📅 Report Period
+            </h2>
+
+            <p>
+                Select a date range to filter the reports.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        method="GET"
+        action="{{ url_for('reports') }}"
+    >
+
+        <div class="form-grid">
+
+
+            <!-- START DATE -->
+
+            <div class="form-group">
+
+                <label for="start_date">
+                    Start Date
+                </label>
+
+                <input
+                    type="date"
+                    id="start_date"
+                    name="start_date"
+                    value="{{ start_date }}"
+                >
+
+            </div>
+
+
+            <!-- END DATE -->
+
+            <div class="form-group">
+
+                <label for="end_date">
+                    End Date
+                </label>
+
+                <input
+                    type="date"
+                    id="end_date"
+                    name="end_date"
+                    value="{{ end_date }}"
+                >
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div
+                style="
+                    display: flex;
+                    align-items: flex-end;
+                    gap: 10px;
+                "
+            >
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    🔍 Generate Report
+                </button>
+
+
+                <a
+                    href="{{ url_for('reports') }}"
+                    class="btn btn-secondary"
+                >
+                    Reset
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SALES SUMMARY -->
+<!-- ===================================================== -->
+
+<div class="section-title">
+
+    <h2>
+        💰 Sales Overview
+    </h2>
+
+</div>
+
+
+<div class="stats-grid">
+
+
+    <!-- TOTAL SALES -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            🧾
+        </div>
+
+        <div>
+
+            <span>
+                Total Sales
+            </span>
+
+            <h3>
+                {{ sales_summary.total_sales or 0 }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- ITEMS SOLD -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">
+            📦
+        </div>
+
+        <div>
+
+            <span>
+                Items Sold
+            </span>
+
+            <h3>
+                {{ sales_summary.total_items_sold or 0 }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- NET SALES -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            💵
+        </div>
+
+        <div>
+
+            <span>
+                Net Sales
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    sales_summary.net_sales or 0
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- DISCOUNT -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            🏷️
+        </div>
+
+        <div>
+
+            <span>
+                Discount
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    sales_summary.total_discount or 0
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- PROFIT SUMMARY -->
+<!-- ===================================================== -->
+
+<div class="section-title">
+
+    <h2>
+        📈 Profitability
+    </h2>
+
+</div>
+
+
+<div class="stats-grid">
+
+
+    <!-- REVENUE -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            💰
+        </div>
+
+        <div>
+
+            <span>
+                Revenue
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    profit_summary.revenue or 0
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- COGS -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            📦
+        </div>
+
+        <div>
+
+            <span>
+                COGS
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    profit_summary.cogs or 0
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- GROSS PROFIT -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            📈
+        </div>
+
+        <div>
+
+            <span>
+                Gross Profit
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    profit_summary.gross_profit or 0
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROFIT MARGIN -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">
+            %
+        </div>
+
+        <div>
+
+            <span>
+                Profit Margin
+            </span>
+
+            <h3>
+                {{ "%.2f"|format(
+                    profit_summary.profit_margin or 0
+                ) }}%
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- PURCHASE SUMMARY -->
+<!-- ===================================================== -->
+
+<div class="section-title">
+
+    <h2>
+        🛒 Purchase Overview
+    </h2>
+
+</div>
+
+
+<div class="stats-grid">
+
+
+    <!-- PURCHASES -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            🧾
+        </div>
+
+        <div>
+
+            <span>
+                Total Purchases
+            </span>
+
+            <h3>
+                {{ purchase_summary.total_purchases or 0 }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- ITEMS PURCHASED -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">
+            📦
+        </div>
+
+        <div>
+
+            <span>
+                Items Purchased
+            </span>
+
+            <h3>
+                {{ purchase_summary.total_items_purchased or 0 }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- PURCHASE VALUE -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            💸
+        </div>
+
+        <div>
+
+            <span>
+                Purchase Value
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    purchase_summary.total_purchase_value or 0
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- INVENTORY SUMMARY -->
+<!-- ===================================================== -->
+
+<div class="section-title">
+
+    <h2>
+        📦 Inventory Overview
+    </h2>
+
+</div>
+
+
+<div class="stats-grid">
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            📦
+        </div>
+
+        <div>
+
+            <span>
+                Products
+            </span>
+
+            <h3>
+                {{ inventory_summary.total_products or 0 }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">
+            🔢
+        </div>
+
+        <div>
+
+            <span>
+                Total Stock
+            </span>
+
+            <h3>
+                {{ inventory_summary.total_stock or 0 }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            💰
+        </div>
+
+        <div>
+
+            <span>
+                Inventory Cost
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    inventory_summary.inventory_cost_value or 0
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            ⚠️
+        </div>
+
+        <div>
+
+            <span>
+                Low Stock
+            </span>
+
+            <h3>
+                {{ inventory_summary.low_stock_products or 0 }}
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- DAILY SALES -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                📅 Daily Sales
+            </h2>
+
+            <p>
+                Sales performance by day.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Number of Sales
+                    </th>
+
+                    <th>
+                        Total Sales
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for row in daily_sales %}
+
+                <tr>
+
+                    <td>
+                        {{ row.sale_date }}
+                    </td>
+
+                    <td>
+                        {{ row.number_of_sales }}
+                    </td>
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                row.total_sales or 0
+                            ) }}
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                        style="text-align: center;"
+                    >
+                        No sales found for this period.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- TOP SELLING PRODUCTS -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                🏆 Top Selling Products
+            </h2>
+
+            <p>
+                Products ranked by quantity sold.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Product
+                    </th>
+
+                    <th>
+                        Quantity Sold
+                    </th>
+
+                    <th>
+                        Revenue
+                    </th>
+
+                    <th>
+                        COGS
+                    </th>
+
+                    <th>
+                        Profit
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for product in top_selling_products %}
+
+                <tr>
+
+                    <td>
+                        {{ loop.index }}
+                    </td>
+
+                    <td>
+
+                        <strong>
+                            {{ product.product_name }}
+                        </strong>
+
+                    </td>
+
+                    <td>
+                        {{ product.quantity_sold }}
+                    </td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(
+                            product.revenue or 0
+                        ) }}
+                    </td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(
+                            product.cogs or 0
+                        ) }}
+                    </td>
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                product.profit or 0
+                            ) }}
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        style="text-align: center;"
+                    >
+                        No product sales found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SALES BY CATEGORY -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                🗂️ Sales by Category
+            </h2>
+
+            <p>
+                Revenue and profit grouped by category.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Category
+                    </th>
+
+                    <th>
+                        Quantity Sold
+                    </th>
+
+                    <th>
+                        Revenue
+                    </th>
+
+                    <th>
+                        Profit
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for category in sales_by_category %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ category.category_name }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ category.quantity_sold }}
+                    </td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(
+                            category.revenue or 0
+                        ) }}
+                    </td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(
+                            category.profit or 0
+                        ) }}
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        style="text-align: center;"
+                    >
+                        No category sales found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- CUSTOMER + EMPLOYEE REPORTS -->
+<!-- ===================================================== -->
+
+<div
+    style="
+        display: grid;
+        grid-template-columns:
+            repeat(auto-fit, minmax(450px, 1fr));
+        gap: 20px;
+    "
+>
+
+
+    <!-- CUSTOMER SALES -->
+
+    <div class="content-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    👥 Top Customers
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Customer
+                        </th>
+
+                        <th>
+                            Sales
+                        </th>
+
+                        <th>
+                            Spent
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for customer in customer_sales %}
+
+                    <tr>
+
+                        <td>
+                            {{ customer.customer_name }}
+                        </td>
+
+                        <td>
+                            {{ customer.number_of_sales }}
+                        </td>
+
+                        <td>
+                            ₹{{ "%.2f"|format(
+                                customer.total_spent or 0
+                            ) }}
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="3"
+                            style="text-align: center;"
+                        >
+                            No customer sales found.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- EMPLOYEE SALES -->
+
+    <div class="content-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    👨‍💼 Employee Performance
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Employee
+                        </th>
+
+                        <th>
+                            Sales
+                        </th>
+
+                        <th>
+                            Revenue
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for employee in employee_sales %}
+
+                    <tr>
+
+                        <td>
+                            {{ employee.employee_name }}
+                        </td>
+
+                        <td>
+                            {{ employee.number_of_sales }}
+                        </td>
+
+                        <td>
+                            ₹{{ "%.2f"|format(
+                                employee.total_sales or 0
+                            ) }}
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="3"
+                            style="text-align: center;"
+                        >
+                            No employee sales found.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SUPPLIER PURCHASES -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                🚚 Supplier Purchases
+            </h2>
+
+            <p>
+                Suppliers ranked by purchase value.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Supplier
+                    </th>
+
+                    <th>
+                        Purchases
+                    </th>
+
+                    <th>
+                        Purchase Value
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for supplier in supplier_purchases %}
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            {{ supplier.supplier_name }}
+                        </strong>
+
+                    </td>
+
+                    <td>
+                        {{ supplier.number_of_purchases }}
+                    </td>
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(
+                            supplier.total_purchase_value or 0
+                        ) }}
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                        style="text-align: center;"
+                    >
+                        No purchases found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- DAILY PURCHASES -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                📅 Daily Purchases
+            </h2>
+
+            <p>
+                Purchase spending by day.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Number of Purchases
+                    </th>
+
+                    <th>
+                        Purchase Value
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for row in daily_purchases %}
+
+                <tr>
+
+                    <td>
+                        {{ row.purchase_date }}
+                    </td>
+
+                    <td>
+                        {{ row.number_of_purchases }}
+                    </td>
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                row.total_purchases or 0
+                            ) }}
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                        style="text-align: center;"
+                    >
+                        No purchases found for this period.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- REPORT FOOTER -->
+<!-- ===================================================== -->
+
+<div
+    style="
+        margin-top: 25px;
+        padding: 18px;
+        border-radius: 10px;
+        background: #f8f9fa;
+        text-align: center;
+    "
+>
+
+    {% if start_date or end_date %}
+
+        <strong>
+            Report Period:
+        </strong>
+
+        {{ start_date or "Beginning" }}
+
+        →
+
+        {{ end_date or "Today" }}
+
+    {% else %}
+
+        <strong>
+            Report Period:
+        </strong>
+
+        All available records
+
+    {% endif %}
+
+</div>
+
+
+{% endblock %}
