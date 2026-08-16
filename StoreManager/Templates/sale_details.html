@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Bill #{{ sale.sale_id }} - Store Manager
+Invoice #{{ sale.sale_id }} - Store Manager
 {% endblock %}
 
 {% block page_title %}
@@ -9,32 +9,32 @@ Sale Details
 {% endblock %}
 
 {% block breadcrumb %}
-Sales / Bill #{{ sale.sale_id }}
+Sales / Invoice #{{ sale.sale_id }}
 {% endblock %}
 
 
 {% block content %}
 
-<!-- ===================================================== -->
-<!-- PAGE HEADER -->
-<!-- ===================================================== -->
+<!-- =========================================================
+     PAGE HEADER
+     ========================================================= -->
 
-<div class="page-header">
+<div class="page-header no-print">
 
     <div>
 
         <h2>
-            Bill #{{ sale.sale_id }}
+            Invoice #{{ sale.sale_id }}
         </h2>
 
         <p>
-            Complete details of this customer transaction.
+            View and print the complete customer invoice.
         </p>
 
     </div>
 
 
-    <div class="form-actions">
+    <div class="invoice-actions">
 
         <a
             href="{{ url_for('sales') }}"
@@ -49,7 +49,7 @@ Sales / Bill #{{ sale.sale_id }}
             class="btn btn-primary"
             onclick="window.print()"
         >
-            🖨 Print Bill
+            🖨 Print Invoice
         </button>
 
     </div>
@@ -57,351 +57,522 @@ Sales / Bill #{{ sale.sale_id }}
 </div>
 
 
-<!-- ===================================================== -->
-<!-- BILL -->
-<!-- ===================================================== -->
 
-<div class="content-card bill-container">
+<!-- =========================================================
+     PROFESSIONAL INVOICE
+     ========================================================= -->
+
+<div class="invoice-wrapper">
+
+    <div class="invoice-card">
 
 
-    <!-- ================================================= -->
-    <!-- BILL HEADER -->
-    <!-- ================================================= -->
+        <!-- =====================================================
+             INVOICE HEADER
+             ===================================================== -->
 
-    <div class="bill-header">
+        <div class="invoice-header">
 
-        <div>
 
-            <h1>
-                STORE MANAGER
-            </h1>
+            <!-- STORE INFORMATION -->
 
-            <p>
-                Store Management System
-            </p>
+            <div class="store-information">
+
+                <div class="store-logo">
+                    SM
+                </div>
+
+
+                <div>
+
+                    <h1>
+                        STORE MANAGER
+                    </h1>
+
+                    <p class="store-tagline">
+                        Smart Store Management System
+                    </p>
+
+                    <p class="store-contact">
+                        Sales & Billing
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- INVOICE INFORMATION -->
+
+            <div class="invoice-meta">
+
+                <div class="invoice-label">
+                    SALES INVOICE
+                </div>
+
+
+                <div class="invoice-number">
+                    #{{ sale.sale_id }}
+                </div>
+
+
+                <div class="invoice-date">
+
+                    <span>
+                        Date
+                    </span>
+
+                    <strong>
+                        {{ sale.sale_date }}
+                    </strong>
+
+                </div>
+
+            </div>
 
         </div>
 
 
-        <div class="bill-info">
 
-            <p>
-                <strong>Bill No:</strong>
-                #{{ sale.sale_id }}
-            </p>
+        <!-- =====================================================
+             DIVIDER
+             ===================================================== -->
 
-            <p>
-                <strong>Date:</strong>
-                {{ sale.sale_date }}
-            </p>
-
-        </div>
-
-    </div>
+        <div class="invoice-divider"></div>
 
 
 
-    <!-- ================================================= -->
-    <!-- CUSTOMER -->
-    <!-- ================================================= -->
+        <!-- =====================================================
+             CUSTOMER INFORMATION
+             ===================================================== -->
 
-    <div class="bill-customer">
-
-        <div>
-
-            <span>
-                Customer
-            </span>
-
-            <strong>
-                {{ sale.customer_name
-                or "Walk-in Customer" }}
-            </strong>
-
-        </div>
+        <div class="customer-section">
 
 
-        <div>
+            <div class="customer-box">
 
-            <span>
-                Payment
-            </span>
+                <span class="section-label">
+                    BILLED TO
+                </span>
 
-            <strong>
 
-                {% if payments %}
+                <h3>
 
-                    {{ payments[0].payment_method }}
+                    {{ sale.customer_name
+                    or "Walk-in Customer" }}
+
+                </h3>
+
+
+                {% if sale.customer_name %}
+
+                <p>
+                    Customer
+                </p>
 
                 {% else %}
 
-                    Not Available
+                <p>
+                    Thank you for shopping with us
+                </p>
 
                 {% endif %}
 
-            </strong>
-
-        </div>
-
-    </div>
+            </div>
 
 
 
-    <!-- ================================================= -->
-    <!-- PRODUCTS -->
-    <!-- ================================================= -->
+            <div class="customer-box payment-box">
 
-    <div class="table-container">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        #
-                    </th>
-
-                    <th>
-                        Product
-                    </th>
-
-                    <th>
-                        Quantity
-                    </th>
-
-                    <th>
-                        Price
-                    </th>
-
-                    <th>
-                        Subtotal
-                    </th>
-
-                </tr>
-
-            </thead>
+                <span class="section-label">
+                    PAYMENT
+                </span>
 
 
-            <tbody>
+                <h3>
 
-                {% for item in details %}
+                    {% if payments %}
 
-                <tr>
+                        {{ payments[0].payment_method }}
 
-                    <td>
-                        {{ loop.index }}
-                    </td>
+                    {% else %}
 
+                        Not Available
 
-                    <td>
+                    {% endif %}
 
-                        <strong>
-                            {{ item.product_name
-                            or "Unknown Product" }}
-                        </strong>
-
-                    </td>
+                </h3>
 
 
-                    <td>
-                        {{ item.quantity }}
-                    </td>
+                {% if payments %}
 
-
-                    <td>
-                        ₹{{ "%.2f"|format(
-                            item.selling_price
-                        ) }}
-                    </td>
-
-
-                    <td>
-
-                        <strong>
-                            ₹{{ "%.2f"|format(
-                                item.subtotal
-                            ) }}
-                        </strong>
-
-                    </td>
-
-                </tr>
-
+                    <p>
+                        {{ payments[0].payment_status }}
+                    </p>
 
                 {% else %}
 
-                <tr>
+                    <p>
+                        Payment information unavailable
+                    </p>
 
-                    <td
-                        colspan="5"
-                        class="empty-state"
-                    >
-
-                        No products found for this sale.
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-
-
-    <!-- ================================================= -->
-    <!-- BILL SUMMARY -->
-    <!-- ================================================= -->
-
-    <div class="bill-summary-container">
-
-        <div class="bill-summary">
-
-
-            <div class="summary-row">
-
-                <span>
-                    Subtotal
-                </span>
-
-                <strong>
-                    ₹{{ "%.2f"|format(
-                        sale.total_amount or 0
-                    ) }}
-                </strong>
-
-            </div>
-
-
-            <div class="summary-row">
-
-                <span>
-                    Discount
-                </span>
-
-                <strong>
-                    ₹{{ "%.2f"|format(
-                        sale.discount or 0
-                    ) }}
-                </strong>
-
-            </div>
-
-
-            <div class="summary-row">
-
-                <span>
-                    Tax
-                </span>
-
-                <strong>
-                    ₹{{ "%.2f"|format(
-                        sale.tax or 0
-                    ) }}
-                </strong>
-
-            </div>
-
-
-            <div class="summary-row final-row">
-
-                <span>
-                    Final Amount
-                </span>
-
-                <strong>
-                    ₹{{ "%.2f"|format(
-                        sale.final_amount or 0
-                    ) }}
-                </strong>
+                {% endif %}
 
             </div>
 
         </div>
 
-    </div>
 
 
+        <!-- =====================================================
+             ITEMS TABLE
+             ===================================================== -->
 
-    <!-- ================================================= -->
-    <!-- PAYMENT INFORMATION -->
-    <!-- ================================================= -->
-
-    <div class="payment-information">
-
-        <h3>
-            Payment Information
-        </h3>
+        <div class="items-section">
 
 
-        {% for payment in payments %}
+            <div class="items-heading">
 
-        <div class="summary-row">
+                <h3>
+                    Order Summary
+                </h3>
 
-            <span>
-                Payment Method
-            </span>
+                <span>
+                    {{ details|length }} item{% if details|length != 1 %}s{% endif %}
+                </span>
 
-            <strong>
-                {{ payment.payment_method }}
-            </strong>
+            </div>
+
+
+            <div class="invoice-table-wrapper">
+
+                <table class="invoice-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="item-number">
+                                #
+                            </th>
+
+                            <th>
+                                Item Description
+                            </th>
+
+                            <th class="quantity-column">
+                                Qty
+                            </th>
+
+                            <th class="price-column">
+                                Unit Price
+                            </th>
+
+                            <th class="amount-column">
+                                Amount
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in details %}
+
+                        <tr>
+
+                            <td class="item-number">
+                                {{ loop.index }}
+                            </td>
+
+
+                            <td>
+
+                                <div class="product-cell">
+
+                                    <strong>
+                                        {{ item.product_name
+                                        or "Unknown Product" }}
+                                    </strong>
+
+                                    <small>
+                                        Product
+                                    </small>
+
+                                </div>
+
+                            </td>
+
+
+                            <td class="quantity-column">
+
+                                {{ item.quantity }}
+
+                            </td>
+
+
+                            <td class="price-column">
+
+                                ₹{{ "%.2f"|format(
+                                    item.selling_price or 0
+                                ) }}
+
+                            </td>
+
+
+                            <td class="amount-column">
+
+                                <strong>
+                                    ₹{{ "%.2f"|format(
+                                        item.subtotal or 0
+                                    ) }}
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+
+                        {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="empty-invoice"
+                            >
+
+                                No products found for this sale.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
 
-        <div class="summary-row">
 
-            <span>
-                Amount Paid
-            </span>
+        <!-- =====================================================
+             TOTALS + PAYMENT
+             ===================================================== -->
 
-            <strong>
-                ₹{{ "%.2f"|format(
-                    payment.amount or 0
-                ) }}
-            </strong>
+        <div class="bottom-section">
+
+
+            <!-- PAYMENT INFORMATION -->
+
+            <div class="payment-details">
+
+                <h3>
+                    Payment Details
+                </h3>
+
+
+                {% if payments %}
+
+                    {% for payment in payments %}
+
+                    <div class="payment-row">
+
+                        <span>
+                            Method
+                        </span>
+
+                        <strong>
+                            {{ payment.payment_method }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="payment-row">
+
+                        <span>
+                            Amount Paid
+                        </span>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                payment.amount or 0
+                            ) }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="payment-row">
+
+                        <span>
+                            Status
+                        </span>
+
+                        <strong
+                            class="payment-status"
+                        >
+                            {{ payment.payment_status }}
+                        </strong>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p class="no-payment">
+                        No payment information available.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- BILL TOTALS -->
+
+            <div class="totals-box">
+
+
+                <div class="total-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            sale.total_amount or 0
+                        ) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="total-row">
+
+                    <span>
+                        Discount
+                    </span>
+
+                    <strong class="discount-value">
+
+                        − ₹{{ "%.2f"|format(
+                            sale.discount or 0
+                        ) }}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="total-row">
+
+                    <span>
+                        Tax
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            sale.tax or 0
+                        ) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="total-divider"></div>
+
+
+                <div class="grand-total">
+
+                    <span>
+                        GRAND TOTAL
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            sale.final_amount or 0
+                        ) }}
+                    </strong>
+
+                </div>
+
+            </div>
 
         </div>
 
 
-        <div class="summary-row">
 
-            <span>
-                Payment Status
-            </span>
+        <!-- =====================================================
+             THANK YOU SECTION
+             ===================================================== -->
 
-            <strong>
-                {{ payment.payment_status }}
-            </strong>
+        <div class="thank-you-section">
+
+            <div class="thank-you-icon">
+                ✓
+            </div>
+
+
+            <div>
+
+                <h3>
+                    Thank you for shopping with us!
+                </h3>
+
+                <p>
+                    We appreciate your business and look forward
+                    to serving you again.
+                </p>
+
+            </div>
 
         </div>
 
 
-        {% endfor %}
 
-    </div>
+        <!-- =====================================================
+             FOOTER
+             ===================================================== -->
+
+        <div class="invoice-footer">
+
+            <div>
+
+                <strong>
+                    STORE MANAGER
+                </strong>
+
+                <span>
+                    Smart Store Management System
+                </span>
+
+            </div>
 
 
+            <div class="footer-right">
 
-    <!-- ================================================= -->
-    <!-- FOOTER -->
-    <!-- ================================================= -->
+                <span>
+                    Invoice #{{ sale.sale_id }}
+                </span>
 
-    <div class="bill-footer">
+                <span>
+                    Computer-generated invoice
+                </span>
 
-        <p>
-            Thank you for shopping with us!
-        </p>
+            </div>
 
-        <small>
-            This is a computer-generated bill.
-        </small>
+        </div>
 
     </div>
 
@@ -409,11 +580,12 @@ Sales / Bill #{{ sale.sale_id }}
 
 
 
-<!-- ===================================================== -->
-<!-- DELETE SALE -->
-<!-- ===================================================== -->
+<!-- =========================================================
+     ACTIONS BELOW BILL
+     ========================================================= -->
 
-<div class="form-actions">
+<div class="invoice-bottom-actions no-print">
+
 
     <a
         href="{{ url_for('sales') }}"
@@ -438,7 +610,7 @@ Sales / Bill #{{ sale.sale_id }}
             type="submit"
             class="btn btn-danger"
         >
-            Delete Sale
+            🗑 Delete Sale
         </button>
 
     </form>
@@ -446,46 +618,1402 @@ Sales / Bill #{{ sale.sale_id }}
 </div>
 
 
-<!-- ===================================================== -->
-<!-- PRINT CSS -->
-<!-- ===================================================== -->
+
+<!-- =========================================================
+     PROFESSIONAL BILL CSS
+     ========================================================= -->
 
 <style>
 
-    @media print {
 
-        body {
-            background: white !important;
-        }
+/* =========================================================
+   PAGE
+   ========================================================= */
 
+.invoice-wrapper {
 
-        .sidebar,
-        .navbar,
-        .page-header,
-        .form-actions,
-        button {
-            display: none !important;
-        }
+    width: 100%;
 
+    display: flex;
 
-        .main-content {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
+    justify-content: center;
+
+    padding: 10px 0 30px;
+
+}
 
 
-        .content-card {
-            box-shadow: none !important;
-            border: none !important;
-        }
+.invoice-card {
+
+    width: 100%;
+
+    max-width: 900px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 30px rgba(15, 23, 42, 0.08);
+
+}
 
 
-        .bill-container {
-            width: 100%;
-            margin: 0;
-        }
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.invoice-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    padding: 32px 36px 26px;
+
+}
+
+
+.store-information {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+
+.store-logo {
+
+    width: 55px;
+
+    height: 55px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.5px;
+
+    box-shadow:
+        0 5px 15px rgba(37, 99, 235, 0.25);
+
+}
+
+
+.store-information h1 {
+
+    margin: 0;
+
+    font-size: 23px;
+
+    letter-spacing: -0.5px;
+
+    color: #111827;
+
+}
+
+
+.store-tagline {
+
+    margin: 4px 0 0;
+
+    color: #64748b;
+
+    font-size: 12px;
+
+}
+
+
+.store-contact {
+
+    margin: 3px 0 0;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+
+}
+
+
+/* =========================================================
+   INVOICE META
+   ========================================================= */
+
+.invoice-meta {
+
+    text-align: right;
+
+}
+
+
+.invoice-label {
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    color: #64748b;
+
+    letter-spacing: 1.5px;
+
+}
+
+
+.invoice-number {
+
+    margin-top: 4px;
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    color: #2563eb;
+
+}
+
+
+.invoice-date {
+
+    margin-top: 7px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 7px;
+
+    font-size: 11px;
+
+    color: #64748b;
+
+}
+
+
+.invoice-date strong {
+
+    color: #374151;
+
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.invoice-divider {
+
+    height: 1px;
+
+    background: #e5e7eb;
+
+    margin: 0 36px;
+
+}
+
+
+/* =========================================================
+   CUSTOMER
+   ========================================================= */
+
+.customer-section {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 20px;
+
+    padding: 25px 36px;
+
+}
+
+
+.customer-box {
+
+    padding: 16px 18px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 9px;
+
+}
+
+
+.section-label {
+
+    display: block;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.customer-box h3 {
+
+    margin: 0;
+
+    font-size: 14px;
+
+    color: #1e293b;
+
+}
+
+
+.customer-box p {
+
+    margin: 4px 0 0;
+
+    font-size: 11px;
+
+    color: #64748b;
+
+}
+
+
+/* =========================================================
+   ITEMS
+   ========================================================= */
+
+.items-section {
+
+    padding: 0 36px;
+
+}
+
+
+.items-heading {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 12px;
+
+}
+
+
+.items-heading h3 {
+
+    margin: 0;
+
+    font-size: 15px;
+
+    color: #1e293b;
+
+}
+
+
+.items-heading span {
+
+    font-size: 11px;
+
+    color: #94a3b8;
+
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.invoice-table-wrapper {
+
+    overflow-x: auto;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 9px;
+
+}
+
+
+.invoice-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+.invoice-table thead {
+
+    background: #f8fafc;
+
+}
+
+
+.invoice-table th {
+
+    padding: 12px 14px;
+
+    text-align: left;
+
+    color: #64748b;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+}
+
+
+.invoice-table td {
+
+    padding: 14px;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    font-size: 12px;
+
+    color: #475569;
+
+}
+
+
+.invoice-table tbody tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+.invoice-table tbody tr:hover {
+
+    background: #f8fafc;
+
+}
+
+
+.item-number {
+
+    width: 45px;
+
+    color: #94a3b8 !important;
+
+}
+
+
+.quantity-column {
+
+    width: 80px;
+
+    text-align: center !important;
+
+}
+
+
+.price-column {
+
+    width: 130px;
+
+    text-align: right !important;
+
+}
+
+
+.amount-column {
+
+    width: 140px;
+
+    text-align: right !important;
+
+}
+
+
+.product-cell {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+}
+
+
+.product-cell strong {
+
+    color: #1e293b;
+
+    font-size: 12px;
+
+}
+
+
+.product-cell small {
+
+    color: #94a3b8;
+
+    font-size: 9px;
+
+}
+
+
+.empty-invoice {
+
+    text-align: center !important;
+
+    padding: 30px !important;
+
+    color: #94a3b8 !important;
+
+}
+
+
+/* =========================================================
+   BOTTOM SECTION
+   ========================================================= */
+
+.bottom-section {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        320px;
+
+    gap: 45px;
+
+    padding: 28px 36px;
+
+}
+
+
+/* =========================================================
+   PAYMENT DETAILS
+   ========================================================= */
+
+.payment-details h3 {
+
+    margin: 0 0 15px;
+
+    font-size: 13px;
+
+    color: #1e293b;
+
+}
+
+
+.payment-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 7px 0;
+
+    font-size: 11px;
+
+    color: #64748b;
+
+}
+
+
+.payment-row strong {
+
+    color: #334155;
+
+    text-align: right;
+
+}
+
+
+.payment-status {
+
+    color: #15803d !important;
+
+}
+
+
+.no-payment {
+
+    color: #94a3b8;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   TOTALS
+   ========================================================= */
+
+.totals-box {
+
+    width: 100%;
+
+}
+
+
+.total-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 7px 0;
+
+    font-size: 12px;
+
+    color: #64748b;
+
+}
+
+
+.total-row strong {
+
+    color: #334155;
+
+}
+
+
+.discount-value {
+
+    color: #dc2626 !important;
+
+}
+
+
+.total-divider {
+
+    height: 1px;
+
+    background: #dbe1e8;
+
+    margin: 8px 0;
+
+}
+
+
+.grand-total {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 15px 17px;
+
+    background: #eff6ff;
+
+    border: 1px solid #dbeafe;
+
+    border-radius: 9px;
+
+    margin-top: 7px;
+
+}
+
+
+.grand-total span {
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.7px;
+
+    color: #475569;
+
+}
+
+
+.grand-total strong {
+
+    font-size: 21px;
+
+    color: #2563eb;
+
+}
+
+
+/* =========================================================
+   THANK YOU
+   ========================================================= */
+
+.thank-you-section {
+
+    margin: 0 36px 25px;
+
+    padding: 17px 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    background: #f0fdf4;
+
+    border: 1px solid #dcfce7;
+
+    border-radius: 9px;
+
+}
+
+
+.thank-you-icon {
+
+    width: 34px;
+
+    height: 34px;
+
+    min-width: 34px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #dcfce7;
+
+    color: #15803d;
+
+    font-weight: 800;
+
+}
+
+
+.thank-you-section h3 {
+
+    margin: 0;
+
+    color: #166534;
+
+    font-size: 12px;
+
+}
+
+
+.thank-you-section p {
+
+    margin: 3px 0 0;
+
+    color: #4d7c5a;
+
+    font-size: 10px;
+
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.invoice-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 17px 36px;
+
+    background: #f8fafc;
+
+    border-top: 1px solid #e5e7eb;
+
+}
+
+
+.invoice-footer div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+}
+
+
+.invoice-footer strong {
+
+    color: #475569;
+
+    font-size: 9px;
+
+    letter-spacing: 0.5px;
+
+}
+
+
+.invoice-footer span {
+
+    color: #94a3b8;
+
+    font-size: 8px;
+
+}
+
+
+.footer-right {
+
+    text-align: right;
+
+}
+
+
+/* =========================================================
+   BOTTOM ACTIONS
+   ========================================================= */
+
+.invoice-bottom-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding-bottom: 30px;
+
+}
+
+
+.invoice-bottom-actions form {
+
+    margin: 0;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+
+    .invoice-header {
+
+        padding: 24px 20px;
+
+        flex-direction: column;
 
     }
+
+
+    .invoice-meta {
+
+        text-align: left;
+
+    }
+
+
+    .invoice-date {
+
+        justify-content: flex-start;
+
+    }
+
+
+    .customer-section {
+
+        grid-template-columns: 1fr;
+
+        padding: 20px;
+
+    }
+
+
+    .items-section {
+
+        padding: 0 20px;
+
+    }
+
+
+    .bottom-section {
+
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+
+        padding: 22px 20px;
+
+    }
+
+
+    .thank-you-section {
+
+        margin-left: 20px;
+
+        margin-right: 20px;
+
+    }
+
+
+    .invoice-footer {
+
+        padding: 15px 20px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+
+    .footer-right {
+
+        text-align: left;
+
+    }
+
+
+    .invoice-bottom-actions {
+
+        padding-left: 15px;
+
+        padding-right: 15px;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   PRINT VERSION
+   ========================================================= */
+
+@media print {
+
+
+    @page {
+
+        size: A4 portrait;
+
+        margin: 10mm;
+
+    }
+
+
+    html,
+    body {
+
+        background: white !important;
+
+        color: #111827 !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       HIDE APPLICATION UI
+       ----------------------------------------------------- */
+
+    .sidebar,
+
+    .topbar,
+
+    .navbar,
+
+    .page-header,
+
+    .no-print,
+
+    .invoice-bottom-actions,
+
+    button {
+
+        display: none !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       MAIN
+       ----------------------------------------------------- */
+
+    .main-content {
+
+        margin: 0 !important;
+
+        padding: 0 !important;
+
+        width: 100% !important;
+
+        min-height: 0 !important;
+
+    }
+
+
+    .page-content {
+
+        padding: 0 !important;
+
+        margin: 0 !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       INVOICE
+       ----------------------------------------------------- */
+
+    .invoice-wrapper {
+
+        display: block;
+
+        padding: 0 !important;
+
+        margin: 0 !important;
+
+    }
+
+
+    .invoice-card {
+
+        width: 100% !important;
+
+        max-width: none !important;
+
+        margin: 0 !important;
+
+        border: 1px solid #d1d5db !important;
+
+        border-radius: 0 !important;
+
+        box-shadow: none !important;
+
+        overflow: visible !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       HEADER
+       ----------------------------------------------------- */
+
+    .invoice-header {
+
+        padding: 20px 22px 17px !important;
+
+    }
+
+
+    .store-logo {
+
+        width: 45px !important;
+
+        height: 45px !important;
+
+        border-radius: 8px !important;
+
+        background: #2563eb !important;
+
+        color: white !important;
+
+        box-shadow: none !important;
+
+        -webkit-print-color-adjust: exact;
+
+        print-color-adjust: exact;
+
+    }
+
+
+    .store-information h1 {
+
+        font-size: 19px !important;
+
+    }
+
+
+    .store-tagline {
+
+        font-size: 9px !important;
+
+    }
+
+
+    .store-contact {
+
+        font-size: 8px !important;
+
+    }
+
+
+    .invoice-label {
+
+        font-size: 8px !important;
+
+    }
+
+
+    .invoice-number {
+
+        font-size: 20px !important;
+
+        color: #2563eb !important;
+
+    }
+
+
+    .invoice-date {
+
+        font-size: 9px !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       CUSTOMER
+       ----------------------------------------------------- */
+
+    .customer-section {
+
+        padding: 16px 22px !important;
+
+    }
+
+
+    .customer-box {
+
+        padding: 11px 13px !important;
+
+        background: #f8fafc !important;
+
+        -webkit-print-color-adjust: exact;
+
+        print-color-adjust: exact;
+
+    }
+
+
+    .section-label {
+
+        font-size: 7px !important;
+
+    }
+
+
+    .customer-box h3 {
+
+        font-size: 11px !important;
+
+    }
+
+
+    .customer-box p {
+
+        font-size: 8px !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       ITEMS
+       ----------------------------------------------------- */
+
+    .items-section {
+
+        padding: 0 22px !important;
+
+    }
+
+
+    .items-heading {
+
+        margin-bottom: 8px !important;
+
+    }
+
+
+    .items-heading h3 {
+
+        font-size: 11px !important;
+
+    }
+
+
+    .items-heading span {
+
+        font-size: 8px !important;
+
+    }
+
+
+    .invoice-table-wrapper {
+
+        border-radius: 5px !important;
+
+    }
+
+
+    .invoice-table th {
+
+        padding: 8px 9px !important;
+
+        font-size: 7px !important;
+
+        background: #f8fafc !important;
+
+        -webkit-print-color-adjust: exact;
+
+        print-color-adjust: exact;
+
+    }
+
+
+    .invoice-table td {
+
+        padding: 9px !important;
+
+        font-size: 9px !important;
+
+    }
+
+
+    .product-cell strong {
+
+        font-size: 9px !important;
+
+    }
+
+
+    .product-cell small {
+
+        display: none !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       TOTALS
+       ----------------------------------------------------- */
+
+    .bottom-section {
+
+        padding: 18px 22px !important;
+
+        gap: 35px !important;
+
+    }
+
+
+    .payment-details h3 {
+
+        font-size: 10px !important;
+
+    }
+
+
+    .payment-row {
+
+        padding: 5px 0 !important;
+
+        font-size: 8px !important;
+
+    }
+
+
+    .total-row {
+
+        padding: 5px 0 !important;
+
+        font-size: 9px !important;
+
+    }
+
+
+    .grand-total {
+
+        padding: 11px 13px !important;
+
+        background: #eff6ff !important;
+
+        -webkit-print-color-adjust: exact;
+
+        print-color-adjust: exact;
+
+    }
+
+
+    .grand-total span {
+
+        font-size: 8px !important;
+
+    }
+
+
+    .grand-total strong {
+
+        font-size: 16px !important;
+
+        color: #2563eb !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       THANK YOU
+       ----------------------------------------------------- */
+
+    .thank-you-section {
+
+        margin: 0 22px 15px !important;
+
+        padding: 11px 13px !important;
+
+        background: #f0fdf4 !important;
+
+        -webkit-print-color-adjust: exact;
+
+        print-color-adjust: exact;
+
+    }
+
+
+    .thank-you-icon {
+
+        width: 27px !important;
+
+        height: 27px !important;
+
+        min-width: 27px !important;
+
+        background: #dcfce7 !important;
+
+        -webkit-print-color-adjust: exact;
+
+        print-color-adjust: exact;
+
+    }
+
+
+    .thank-you-section h3 {
+
+        font-size: 9px !important;
+
+    }
+
+
+    .thank-you-section p {
+
+        font-size: 7px !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       FOOTER
+       ----------------------------------------------------- */
+
+    .invoice-footer {
+
+        padding: 10px 22px !important;
+
+        background: #f8fafc !important;
+
+        -webkit-print-color-adjust: exact;
+
+        print-color-adjust: exact;
+
+    }
+
+
+    .invoice-footer strong {
+
+        font-size: 7px !important;
+
+    }
+
+
+    .invoice-footer span {
+
+        font-size: 6px !important;
+
+    }
+
+
+    /* -----------------------------------------------------
+       PAGE BREAK
+       ----------------------------------------------------- */
+
+    .invoice-card {
+
+        page-break-inside: avoid;
+
+    }
+
+
+    tr {
+
+        page-break-inside: avoid;
+
+    }
+
+}
 
 </style>
 
