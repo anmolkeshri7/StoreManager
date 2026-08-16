@@ -15,6 +15,7 @@ Purchases
 
 {% block content %}
 
+
 <!-- ===================================================== -->
 <!-- PAGE HEADER -->
 <!-- ===================================================== -->
@@ -28,7 +29,7 @@ Purchases
         </h2>
 
         <p>
-            Manage supplier purchases and inventory stock.
+            Manage supplier purchases and inventory stock entries.
         </p>
 
     </div>
@@ -45,8 +46,21 @@ Purchases
 
 
 <!-- ===================================================== -->
-<!-- STAT CARDS -->
+<!-- PURCHASE STATISTICS -->
 <!-- ===================================================== -->
+
+{% set total_purchases = purchases|length %}
+
+{% set total_purchase_amount = namespace(value=0) %}
+
+{% for purchase in purchases %}
+
+    {% set total_purchase_amount.value =
+        total_purchase_amount.value
+        + (purchase.total_amount or 0) %}
+
+{% endfor %}
+
 
 <div class="stats-grid">
 
@@ -56,7 +70,7 @@ Purchases
     <div class="stat-card">
 
         <div class="stat-icon blue">
-            🛒
+            🧾
         </div>
 
         <div>
@@ -66,7 +80,7 @@ Purchases
             </span>
 
             <h3>
-                {{ purchases|length }}
+                {{ total_purchases }}
             </h3>
 
         </div>
@@ -74,12 +88,12 @@ Purchases
     </div>
 
 
-    <!-- TOTAL VALUE -->
+    <!-- TOTAL PURCHASE VALUE -->
 
     <div class="stat-card">
 
-        <div class="stat-icon green">
-            ₹
+        <div class="stat-icon orange">
+            💰
         </div>
 
         <div>
@@ -90,8 +104,7 @@ Purchases
 
             <h3>
                 ₹{{ "%.2f"|format(
-                    purchases
-                    |sum(attribute="total_amount")
+                    total_purchase_amount.value
                 ) }}
             </h3>
 
@@ -100,22 +113,35 @@ Purchases
     </div>
 
 
-    <!-- SUPPLIERS -->
+    <!-- AVERAGE PURCHASE -->
 
     <div class="stat-card">
 
-        <div class="stat-icon orange">
-            🚚
+        <div class="stat-icon purple">
+            📊
         </div>
 
         <div>
 
             <span>
-                Supplier Purchases
+                Average Purchase
             </span>
 
             <h3>
-                {{ purchases|length }}
+
+                {% if total_purchases > 0 %}
+
+                    ₹{{ "%.2f"|format(
+                        total_purchase_amount.value
+                        / total_purchases
+                    ) }}
+
+                {% else %}
+
+                    ₹0.00
+
+                {% endif %}
+
             </h3>
 
         </div>
@@ -123,22 +149,22 @@ Purchases
     </div>
 
 
-    <!-- STATUS -->
+    <!-- SUPPLIER TRANSACTIONS -->
 
     <div class="stat-card">
 
-        <div class="stat-icon red">
-            ✓
+        <div class="stat-icon green">
+            🚚
         </div>
 
         <div>
 
             <span>
-                Recorded
+                Supplier Transactions
             </span>
 
             <h3>
-                {{ purchases|length }}
+                {{ total_purchases }}
             </h3>
 
         </div>
@@ -155,8 +181,6 @@ Purchases
 <div class="content-card">
 
 
-    <!-- TABLE HEADER -->
-
     <div class="card-header">
 
         <div>
@@ -172,50 +196,24 @@ Purchases
         </div>
 
 
-        <div class="table-actions">
+        <div>
 
+            <span class="record-count">
 
-            <!-- SEARCH -->
+                {{ total_purchases }}
 
-            <div class="search-box">
+                purchase(s)
 
-                <span>
-                    ⌕
-                </span>
-
-                <input
-                    type="text"
-                    id="purchaseSearch"
-                    placeholder="Search purchases..."
-                    autocomplete="off"
-                >
-
-            </div>
-
-
-            <!-- CLEAR -->
-
-            <button
-                type="button"
-                class="btn btn-secondary"
-                id="clearPurchaseSearch"
-            >
-                Clear
-            </button>
+            </span>
 
         </div>
 
     </div>
 
 
-    <!-- ================================================= -->
-    <!-- TABLE -->
-    <!-- ================================================= -->
-
     <div class="table-container">
 
-        <table id="purchasesTable">
-
+        <table>
 
             <thead>
 
@@ -230,7 +228,11 @@ Purchases
                     </th>
 
                     <th>
-                        Date
+                        Employee
+                    </th>
+
+                    <th>
+                        Purchase Date
                     </th>
 
                     <th>
@@ -251,7 +253,7 @@ Purchases
 
                 {% for purchase in purchases %}
 
-                <tr class="purchase-row">
+                <tr>
 
 
                     <!-- PURCHASE ID -->
@@ -269,26 +271,38 @@ Purchases
 
                     <td>
 
-                        <div class="product-name">
+                        {% if purchase.supplier_name %}
 
-                            <div class="product-image">
-                                🚚
-                            </div>
+                            <strong>
+                                {{ purchase.supplier_name }}
+                            </strong>
 
-                            <div>
+                        {% else %}
 
-                                <strong>
-                                    {{ purchase.supplier_name
-                                    or "Unknown Supplier" }}
-                                </strong>
+                            <span class="text-muted">
+                                Supplier #{{ purchase.supplier_id }}
+                            </span>
 
-                                <small>
-                                    Supplier
-                                </small>
+                        {% endif %}
 
-                            </div>
+                    </td>
 
-                        </div>
+
+                    <!-- EMPLOYEE -->
+
+                    <td>
+
+                        {% if purchase.employee_name %}
+
+                            {{ purchase.employee_name }}
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                Not specified
+                            </span>
+
+                        {% endif %}
 
                     </td>
 
@@ -297,7 +311,17 @@ Purchases
 
                     <td>
 
-                        {{ purchase.purchase_date }}
+                        {% if purchase.purchase_date %}
+
+                            {{ purchase.purchase_date }}
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                Not specified
+                            </span>
+
+                        {% endif %}
 
                     </td>
 
@@ -308,8 +332,7 @@ Purchases
 
                         <strong>
                             ₹{{ "%.2f"|format(
-                                purchase.total_amount
-                                or 0
+                                purchase.total_amount or 0
                             ) }}
                         </strong>
 
@@ -330,38 +353,36 @@ Purchases
                                     'purchase_details',
                                     purchase_id=purchase.purchase_id
                                 ) }}"
-                                class="icon-btn"
-                                title="View Purchase"
+                                class="btn btn-sm btn-secondary"
                             >
-                                👁
+                                👁 View
                             </a>
 
 
                             <!-- DELETE -->
 
                             <form
-                                method="POST"
                                 action="{{ url_for(
                                     'delete_purchase_page',
                                     purchase_id=purchase.purchase_id
                                 ) }}"
+                                method="POST"
                                 style="display: inline;"
-
-                                onsubmit="return confirm(
-                                    'Deleting this purchase will reduce the stock that was added by this purchase. Continue?'
-                                );"
+                                onsubmit="
+                                    return confirm(
+                                        'Are you sure you want to delete this purchase? The purchased quantity will be removed from product stock.'
+                                    );
+                                "
                             >
 
                                 <button
                                     type="submit"
-                                    class="icon-btn delete"
-                                    title="Delete Purchase"
+                                    class="btn btn-sm btn-danger"
                                 >
-                                    🗑
+                                    🗑 Delete
                                 </button>
 
                             </form>
-
 
                         </div>
 
@@ -373,26 +394,46 @@ Purchases
                 {% else %}
 
 
-                <!-- NO PURCHASES -->
+                <!-- ================================================= -->
+                <!-- EMPTY STATE -->
+                <!-- ================================================= -->
 
                 <tr>
 
                     <td
-                        colspan="5"
+                        colspan="6"
                         class="empty-state"
                     >
 
-                        <div>
-                            🛒
+                        <div
+                            style="
+                                font-size: 48px;
+                                margin-bottom: 12px;
+                            "
+                        >
+                            📦
                         </div>
 
+
                         <h3>
-                            No purchases found
+                            No Purchases Found
                         </h3>
 
+
                         <p>
-                            Add your first purchase to start managing inventory.
+                            No supplier purchases have been
+                            recorded yet.
                         </p>
+
+
+                        <a
+                            href="{{ url_for(
+                                'add_purchase_page'
+                            ) }}"
+                            class="btn btn-primary"
+                        >
+                            + Add First Purchase
+                        </a>
 
                     </td>
 
@@ -400,35 +441,6 @@ Purchases
 
 
                 {% endfor %}
-
-
-                <!-- SEARCH NO RESULT -->
-
-                <tr
-                    id="purchaseSearchNoResult"
-                    style="display: none;"
-                >
-
-                    <td
-                        colspan="5"
-                        class="empty-state"
-                    >
-
-                        <div>
-                            🔍
-                        </div>
-
-                        <h3>
-                            No matching purchases
-                        </h3>
-
-                        <p>
-                            Try a different purchase ID or supplier name.
-                        </p>
-
-                    </td>
-
-                </tr>
 
 
             </tbody>
@@ -441,127 +453,98 @@ Purchases
 
 
 <!-- ===================================================== -->
-<!-- SEARCH JAVASCRIPT -->
+<!-- PURCHASE INFORMATION -->
 <!-- ===================================================== -->
 
-<script>
-
-    const purchaseSearch =
-        document.getElementById(
-            "purchaseSearch"
-        );
+<div class="content-card">
 
 
-    const clearPurchaseSearch =
-        document.getElementById(
-            "clearPurchaseSearch"
-        );
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                📦 Purchase & Inventory Flow
+            </h2>
+
+            <p>
+                Purchases automatically affect product inventory.
+            </p>
+
+        </div>
+
+    </div>
 
 
-    const purchaseRows =
-        document.querySelectorAll(
-            ".purchase-row"
-        );
+    <div class="dashboard-grid">
 
 
-    const purchaseNoResult =
-        document.getElementById(
-            "purchaseSearchNoResult"
-        );
+        <!-- PURCHASE -->
+
+        <div class="alert-box info">
+
+            <strong>
+                🧾 Purchase
+            </strong>
+
+            <p>
+                Record products purchased from a supplier,
+                along with quantities and purchase prices.
+            </p>
+
+        </div>
 
 
-    /* SEARCH */
+        <!-- STOCK -->
 
-    purchaseSearch.addEventListener(
-        "input",
-        function () {
+        <div class="alert-box success">
 
-            const searchText =
-                purchaseSearch.value
-                    .toLowerCase()
-                    .trim();
+            <strong>
+                📈 Stock Update
+            </strong>
 
+            <p>
+                Purchased quantities are automatically added
+                to the corresponding product stock.
+            </p>
 
-            let visibleRows = 0;
-
-
-            purchaseRows.forEach(
-                function (row) {
-
-                    const rowText =
-                        row.textContent
-                            .toLowerCase();
+        </div>
 
 
-                    if (
-                        rowText.includes(
-                            searchText
-                        )
-                    ) {
+        <!-- EMPLOYEE -->
 
-                        row.style.display = "";
+        <div class="alert-box info">
 
-                        visibleRows++;
+            <strong>
+                👤 Employee Tracking
+            </strong>
 
-                    }
+            <p>
+                Each purchase can optionally be associated
+                with the employee who handled it.
+            </p>
 
-                    else {
-
-                        row.style.display = "none";
-
-                    }
-
-                }
-            );
+        </div>
 
 
-            if (
-                searchText !== ""
-                &&
-                visibleRows === 0
-            ) {
+        <!-- DETAILS -->
 
-                purchaseNoResult.style.display = "";
+        <div class="alert-box success">
 
-            }
+            <strong>
+                🔍 Purchase Details
+            </strong>
 
-            else {
+            <p>
+                Open any purchase to view all products,
+                quantities, prices and subtotals.
+            </p>
 
-                purchaseNoResult.style.display = "none";
+        </div>
 
-            }
+    </div>
 
-        }
-    );
-
-
-    /* CLEAR SEARCH */
-
-    clearPurchaseSearch.addEventListener(
-        "click",
-        function () {
-
-            purchaseSearch.value = "";
-
-
-            purchaseRows.forEach(
-                function (row) {
-
-                    row.style.display = "";
-
-                }
-            );
-
-
-            purchaseNoResult.style.display = "none";
-
-
-            purchaseSearch.focus();
-
-        }
-    );
-
-</script>
+</div>
 
 
 {% endblock %}

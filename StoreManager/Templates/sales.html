@@ -1,0 +1,617 @@
+{% extends "base.html" %}
+
+{% block title %}
+Sales - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Sales
+{% endblock %}
+
+{% block breadcrumb %}
+Sales
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Sales & Billing
+        </h2>
+
+        <p>
+            Manage sales, bills, payments and customer transactions.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('add_sale_page') }}"
+        class="btn btn-primary"
+    >
+        + New Sale
+    </a>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- STAT CARDS -->
+<!-- ===================================================== -->
+
+<div class="stats-grid">
+
+
+    <!-- TOTAL SALES -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            🧾
+        </div>
+
+        <div>
+
+            <span>
+                Total Sales
+            </span>
+
+            <h3>
+                {{ sales|length }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- SALES VALUE -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            ₹
+        </div>
+
+        <div>
+
+            <span>
+                Sales Value
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    sales
+                    |sum(attribute="final_amount")
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- DISCOUNT -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            %
+        </div>
+
+        <div>
+
+            <span>
+                Total Discount
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    sales
+                    |sum(attribute="discount")
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- TAX -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon red">
+            ₹
+        </div>
+
+        <div>
+
+            <span>
+                Total Tax
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(
+                    sales
+                    |sum(attribute="tax")
+                ) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SALES TABLE -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+
+    <!-- TABLE HEADER -->
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Sales History
+            </h2>
+
+            <p>
+                View all customer sales and billing transactions.
+            </p>
+
+        </div>
+
+
+        <div class="table-actions">
+
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <span>
+                    ⌕
+                </span>
+
+                <input
+                    type="text"
+                    id="saleSearch"
+                    placeholder="Search sales..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <!-- CLEAR -->
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                id="clearSaleSearch"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- TABLE -->
+    <!-- ================================================= -->
+
+    <div class="table-container">
+
+        <table id="salesTable">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Sale ID
+                    </th>
+
+                    <th>
+                        Customer
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Total
+                    </th>
+
+                    <th>
+                        Discount
+                    </th>
+
+                    <th>
+                        Tax
+                    </th>
+
+                    <th>
+                        Final Amount
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for sale in sales %}
+
+                <tr class="sale-row">
+
+
+                    <!-- SALE ID -->
+
+                    <td>
+
+                        <strong>
+                            #{{ sale.sale_id }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- CUSTOMER -->
+
+                    <td>
+
+                        <div class="product-name">
+
+                            <div class="product-image">
+                                👤
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    {{ sale.customer_name
+                                    or "Walk-in Customer" }}
+                                </strong>
+
+                                <small>
+                                    Customer
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- DATE -->
+
+                    <td>
+
+                        {{ sale.sale_date }}
+
+                    </td>
+
+
+                    <!-- TOTAL -->
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(
+                            sale.total_amount or 0
+                        ) }}
+
+                    </td>
+
+
+                    <!-- DISCOUNT -->
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(
+                            sale.discount or 0
+                        ) }}
+
+                    </td>
+
+
+                    <!-- TAX -->
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(
+                            sale.tax or 0
+                        ) }}
+
+                    </td>
+
+
+                    <!-- FINAL -->
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                sale.final_amount or 0
+                            ) }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div class="action-buttons">
+
+
+                            <!-- VIEW -->
+
+                            <a
+                                href="{{ url_for(
+                                    'sale_details',
+                                    sale_id=sale.sale_id
+                                ) }}"
+                                class="icon-btn"
+                                title="View Sale"
+                            >
+                                👁
+                            </a>
+
+
+                            <!-- DELETE -->
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'delete_sale_page',
+                                    sale_id=sale.sale_id
+                                ) }}"
+                                style="display: inline;"
+
+                                onsubmit="return confirm(
+                                    'Deleting this sale will restore the sold quantity to product stock. Continue?'
+                                );"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="icon-btn delete"
+                                    title="Delete Sale"
+                                >
+                                    🗑
+                                </button>
+
+                            </form>
+
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% else %}
+
+
+                <!-- NO SALES -->
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="empty-state"
+                    >
+
+                        <div>
+                            🧾
+                        </div>
+
+                        <h3>
+                            No sales found
+                        </h3>
+
+                        <p>
+                            Create your first sale to start billing customers.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+
+                {% endfor %}
+
+
+                <!-- SEARCH NO RESULT -->
+
+                <tr
+                    id="saleSearchNoResult"
+                    style="display: none;"
+                >
+
+                    <td
+                        colspan="8"
+                        class="empty-state"
+                    >
+
+                        <div>
+                            🔍
+                        </div>
+
+                        <h3>
+                            No matching sales
+                        </h3>
+
+                        <p>
+                            Try another sale ID or customer name.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SEARCH JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+    const saleSearch =
+        document.getElementById(
+            "saleSearch"
+        );
+
+
+    const clearSaleSearch =
+        document.getElementById(
+            "clearSaleSearch"
+        );
+
+
+    const saleRows =
+        document.querySelectorAll(
+            ".sale-row"
+        );
+
+
+    const saleNoResult =
+        document.getElementById(
+            "saleSearchNoResult"
+        );
+
+
+    /* SEARCH */
+
+    saleSearch.addEventListener(
+        "input",
+        function () {
+
+            const searchText =
+                saleSearch.value
+                    .toLowerCase()
+                    .trim();
+
+
+            let visibleRows = 0;
+
+
+            saleRows.forEach(
+                function (row) {
+
+                    const rowText =
+                        row.textContent
+                            .toLowerCase();
+
+
+                    if (
+                        rowText.includes(
+                            searchText
+                        )
+                    ) {
+
+                        row.style.display = "";
+
+                        visibleRows++;
+
+                    }
+
+                    else {
+
+                        row.style.display = "none";
+
+                    }
+
+                }
+            );
+
+
+            if (
+                searchText !== ""
+                &&
+                visibleRows === 0
+            ) {
+
+                saleNoResult.style.display = "";
+
+            }
+
+            else {
+
+                saleNoResult.style.display = "none";
+
+            }
+
+        }
+    );
+
+
+    /* CLEAR SEARCH */
+
+    clearSaleSearch.addEventListener(
+        "click",
+        function () {
+
+            saleSearch.value = "";
+
+
+            saleRows.forEach(
+                function (row) {
+
+                    row.style.display = "";
+
+                }
+            );
+
+
+            saleNoResult.style.display = "none";
+
+
+            saleSearch.focus();
+
+        }
+    );
+
+</script>
+
+
+{% endblock %}

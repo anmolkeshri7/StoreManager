@@ -1,0 +1,1448 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Dashboard
+{% endblock %}
+
+{% block breadcrumb %}
+Dashboard
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Store Dashboard
+        </h2>
+
+        <p>
+            Overview of your store's sales, inventory and operations.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- MAIN STATISTICS -->
+<!-- ===================================================== -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            📦
+        </div>
+
+        <div>
+
+            <span>
+                Total Products
+            </span>
+
+            <h3>
+                {{ stats.total_products }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            👥
+        </div>
+
+        <div>
+
+            <span>
+                Customers
+            </span>
+
+            <h3>
+                {{ stats.total_customers }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            🚚
+        </div>
+
+        <div>
+
+            <span>
+                Suppliers
+            </span>
+
+            <h3>
+                {{ stats.total_suppliers }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">
+            🗂
+        </div>
+
+        <div>
+
+            <span>
+                Categories
+            </span>
+
+            <h3>
+                {{ stats.total_categories }}
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- FINANCIAL STATISTICS -->
+<!-- ===================================================== -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            💰
+        </div>
+
+        <div>
+
+            <span>
+                Today's Sales
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(stats.today_sales) }}
+            </h3>
+
+            <small>
+                {{ stats.today_sale_count }}
+                transaction(s)
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            📈
+        </div>
+
+        <div>
+
+            <span>
+                Total Sales
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(stats.total_sales_value) }}
+            </h3>
+
+            <small>
+                {{ stats.total_sales }}
+                sale(s)
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            🛒
+        </div>
+
+        <div>
+
+            <span>
+                Purchase Value
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(stats.total_purchase_value) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">
+            📊
+        </div>
+
+        <div>
+
+            <span>
+                Inventory Value
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(stats.inventory_value) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- PROFIT ANALYTICS -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Profit Analytics
+            </h2>
+
+            <p>
+                Overview of revenue, costs and profitability.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon blue">
+                💵
+            </div>
+
+            <div>
+
+                <span>
+                    Sales Revenue
+                </span>
+
+                <h3>
+                    ₹{{ "%.2f"|format(
+                        stats.total_sales_value
+                    ) }}
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon orange">
+                💸
+            </div>
+
+            <div>
+
+                <span>
+                    Cost of Goods Sold
+                </span>
+
+                <h3>
+                    ₹{{ "%.2f"|format(
+                        stats.cost_of_goods_sold
+                    ) }}
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon green">
+                📈
+            </div>
+
+            <div>
+
+                <span>
+                    Gross Profit
+                </span>
+
+                <h3>
+                    ₹{{ "%.2f"|format(
+                        stats.gross_profit
+                    ) }}
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon purple">
+                %
+            </div>
+
+            <div>
+
+                <span>
+                    Profit Margin
+                </span>
+
+                <h3>
+                    {{ "%.2f"|format(
+                        stats.profit_margin
+                    ) }}%
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- INVENTORY STATUS -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Inventory Status
+            </h2>
+
+            <p>
+                Current stock health of your store.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+
+        <!-- TOTAL STOCK -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon blue">
+                📦
+            </div>
+
+            <div>
+
+                <span>
+                    Total Stock
+                </span>
+
+                <h3>
+                    {{ stats.total_stock }}
+                </h3>
+
+                <small>
+                    Units currently available
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <!-- LOW STOCK -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon orange">
+                ⚠️
+            </div>
+
+            <div>
+
+                <span>
+                    Low Stock
+                </span>
+
+                <h3>
+                    {{ stats.low_stock_count }}
+                </h3>
+
+                <small>
+                    Need restocking
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <!-- OUT OF STOCK -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon red">
+                🚫
+            </div>
+
+            <div>
+
+                <span>
+                    Out of Stock
+                </span>
+
+                <h3>
+                    {{ stats.out_of_stock_count }}
+                </h3>
+
+                <small>
+                    Currently unavailable
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <!-- TRANSACTIONS -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon green">
+                🧾
+            </div>
+
+            <div>
+
+                <span>
+                    Transactions
+                </span>
+
+                <h3>
+                    {{ stats.total_sales }}
+                </h3>
+
+                <small>
+                    Total sales
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- INVENTORY ALERTS -->
+<!-- ===================================================== -->
+
+<div class="dashboard-grid">
+
+
+    <!-- LOW STOCK ALERT -->
+
+    <div class="content-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    {% if stats.low_stock_count > 0 %}
+                    ⚠️ Restocking Required
+                    {% else %}
+                    ✅ Stock Status
+                    {% endif %}
+                </h2>
+
+                <p>
+                    Products that need inventory attention.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('products') }}"
+                class="btn btn-secondary"
+            >
+                View Products
+            </a>
+
+        </div>
+
+
+        {% if stats.low_stock_count > 0 %}
+
+        <div class="alert-box warning">
+
+            <strong>
+                {{ stats.low_stock_count }}
+                product(s) need restocking.
+            </strong>
+
+            <p>
+                Review the products below and replenish
+                their inventory when necessary.
+            </p>
+
+        </div>
+
+        {% else %}
+
+        <div class="alert-box success">
+
+            <strong>
+                Inventory looks healthy.
+            </strong>
+
+            <p>
+                No products are currently below their
+                reorder level.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Current Stock
+                        </th>
+
+                        <th>
+                            Reorder Level
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for product in low_stock_products %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                {{ product.product_name }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ product.stock_quantity }}
+                            {{ product.unit }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ product.reorder_level }}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if product.stock_quantity == 0 %}
+
+                            <span class="status-badge danger">
+                                OUT OF STOCK
+                            </span>
+
+                            {% else %}
+
+                            <span class="status-badge warning">
+                                LOW STOCK
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            class="empty-state"
+                        >
+
+                            <div>
+                                ✅
+                            </div>
+
+                            <p>
+                                No inventory alerts.
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- STOCK SUMMARY -->
+
+    <div class="content-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Stock Summary
+                </h2>
+
+                <p>
+                    Quick overview of inventory health.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="inventory-summary">
+
+
+            <div class="inventory-summary-item">
+
+                <div class="inventory-summary-icon">
+                    📦
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ stats.total_products }}
+                    </strong>
+
+                    <span>
+                        Total Products
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="inventory-summary-item">
+
+                <div class="inventory-summary-icon">
+                    📊
+                </div>
+
+                <div>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            stats.inventory_value
+                        ) }}
+                    </strong>
+
+                    <span>
+                        Inventory Value
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="inventory-summary-item">
+
+                <div class="inventory-summary-icon">
+                    ⚠️
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ stats.low_stock_count }}
+                    </strong>
+
+                    <span>
+                        Low Stock
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="inventory-summary-item">
+
+                <div class="inventory-summary-icon">
+                    🚫
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ stats.out_of_stock_count }}
+                    </strong>
+
+                    <span>
+                        Out of Stock
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="inventory-health">
+
+            {% if stats.out_of_stock_count > 0 %}
+
+            <div class="alert-box danger">
+
+                <strong>
+                    🚫 Immediate Attention Required
+                </strong>
+
+                <p>
+                    {{ stats.out_of_stock_count }}
+                    product(s) are completely out of stock.
+                </p>
+
+            </div>
+
+            {% elif stats.low_stock_count > 0 %}
+
+            <div class="alert-box warning">
+
+                <strong>
+                    ⚠️ Restocking Recommended
+                </strong>
+
+                <p>
+                    Some products have reached their
+                    reorder levels.
+                </p>
+
+            </div>
+
+            {% else %}
+
+            <div class="alert-box success">
+
+                <strong>
+                    ✅ Inventory Healthy
+                </strong>
+
+                <p>
+                    Your current inventory is above
+                    all reorder levels.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ANALYTICS CHARTS -->
+<!-- ===================================================== -->
+
+<div class="dashboard-grid">
+
+
+    <!-- MONTHLY SALES -->
+
+    <div class="content-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Monthly Sales
+                </h2>
+
+                <p>
+                    Sales performance over recent months.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div style="height: 320px; padding: 20px;">
+
+            <canvas
+                id="monthlySalesChart"
+            ></canvas>
+
+        </div>
+
+    </div>
+
+
+    <!-- SALES BY CATEGORY -->
+
+    <div class="content-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Sales by Category
+                </h2>
+
+                <p>
+                    Revenue distribution by category.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div style="height: 320px; padding: 20px;">
+
+            <canvas
+                id="categorySalesChart"
+            ></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- RECENT SALES -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Recent Sales
+            </h2>
+
+            <p>
+                Latest customer transactions.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('sales') }}"
+            class="btn btn-secondary"
+        >
+            View All
+        </a>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Sale
+                    </th>
+
+                    <th>
+                        Customer
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for sale in recent_sales %}
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            #{{ sale.sale_id }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        {{ sale.customer_name
+                        or "Walk-in Customer" }}
+
+                    </td>
+
+
+                    <td>
+
+                        {{ sale.sale_date }}
+
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                sale.final_amount
+                            ) }}
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="empty-state"
+                    >
+
+                        No sales yet.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- TOP SELLING PRODUCTS -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Top Selling Products
+            </h2>
+
+            <p>
+                Products with the highest sales quantity.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Rank
+                    </th>
+
+                    <th>
+                        Product
+                    </th>
+
+                    <th>
+                        Quantity Sold
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for product in top_selling_products %}
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            #{{ loop.index }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        📦
+                        {{ product.product_name }}
+
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            {{ product.total_quantity_sold }}
+                        </strong>
+
+                        units
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                        class="empty-state"
+                    >
+
+                        No sales data available yet.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- QUICK ACTIONS -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Quick Actions
+            </h2>
+
+            <p>
+                Frequently used store operations.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="quick-actions">
+
+
+        <a
+            href="{{ url_for('add_product_page') }}"
+            class="quick-action"
+        >
+
+            <span>
+                📦
+            </span>
+
+            <strong>
+                Add Product
+            </strong>
+
+            <small>
+                Add a new product
+            </small>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('add_purchase_page') }}"
+            class="quick-action"
+        >
+
+            <span>
+                🛒
+            </span>
+
+            <strong>
+                Add Purchase
+            </strong>
+
+            <small>
+                Record supplier purchase
+            </small>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('add_sale_page') }}"
+            class="quick-action"
+        >
+
+            <span>
+                🧾
+            </span>
+
+            <strong>
+                New Sale
+            </strong>
+
+            <small>
+                Create customer bill
+            </small>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('add_customer_page') }}"
+            class="quick-action"
+        >
+
+            <span>
+                👤
+            </span>
+
+            <strong>
+                Add Customer
+            </strong>
+
+            <small>
+                Register a customer
+            </small>
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- CHART.JS -->
+<!-- ===================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+
+
+// =========================================================
+// MONTHLY SALES DATA
+// =========================================================
+
+const monthlyLabels = [
+
+    {% for item in monthly_sales %}
+
+        {{ item.month|tojson }}
+
+        {% if not loop.last %},{% endif %}
+
+    {% endfor %}
+
+];
+
+
+const monthlyValues = [
+
+    {% for item in monthly_sales %}
+
+        {{ item.total_sales or 0 }}
+
+        {% if not loop.last %},{% endif %}
+
+    {% endfor %}
+
+];
+
+
+// =========================================================
+// MONTHLY SALES CHART
+// =========================================================
+
+new Chart(
+
+    document.getElementById(
+        "monthlySalesChart"
+    ),
+
+    {
+
+        type: "bar",
+
+        data: {
+
+            labels: monthlyLabels,
+
+            datasets: [
+
+                {
+
+                    label: "Sales",
+
+                    data: monthlyValues
+
+                }
+
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+
+                    display: false
+
+                }
+
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true
+
+                }
+
+            }
+
+        }
+
+    }
+
+);
+
+
+// =========================================================
+// CATEGORY DATA
+// =========================================================
+
+const categoryLabels = [
+
+    {% for item in sales_by_category %}
+
+        {{ item.category_name|tojson }}
+
+        {% if not loop.last %},{% endif %}
+
+    {% endfor %}
+
+];
+
+
+const categoryValues = [
+
+    {% for item in sales_by_category %}
+
+        {{ item.total_sales or 0 }}
+
+        {% if not loop.last %},{% endif %}
+
+    {% endfor %}
+
+];
+
+
+// =========================================================
+// CATEGORY SALES CHART
+// =========================================================
+
+new Chart(
+
+    document.getElementById(
+        "categorySalesChart"
+    ),
+
+    {
+
+        type: "doughnut",
+
+        data: {
+
+            labels: categoryLabels,
+
+            datasets: [
+
+                {
+
+                    label: "Sales",
+
+                    data: categoryValues
+
+                }
+
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false
+
+        }
+
+    }
+
+);
+
+</script>
+
+
+{% endblock %}

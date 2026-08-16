@@ -1,0 +1,491 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Employee - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Add Employee
+{% endblock %}
+
+{% block breadcrumb %}
+Employees / Add Employee
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Add New Employee
+        </h2>
+
+        <p>
+            Add a new employee to your store management system.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('employees') }}"
+        class="btn btn-secondary"
+    >
+
+        ← Back to Employees
+
+    </a>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- EMPLOYEE FORM -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Employee Information
+            </h2>
+
+            <p>
+                Enter the employee's basic information below.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        action="{{ url_for('add_employee_page') }}"
+        method="POST"
+        id="employeeForm"
+    >
+
+
+        <!-- ================================================= -->
+        <!-- BASIC INFORMATION -->
+        <!-- ================================================= -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+
+                <h3>
+                    👤 Basic Information
+                </h3>
+
+                <p>
+                    Enter the employee's personal details.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- EMPLOYEE NAME -->
+
+                <div class="form-group">
+
+                    <label for="employee_name">
+
+                        Employee Name
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="employee_name"
+                        name="employee_name"
+                        placeholder="Enter employee name"
+                        maxlength="150"
+                        required
+                    >
+
+                    <small>
+                        Full name of the employee.
+                    </small>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+
+                        Phone Number
+
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="Enter phone number"
+                        maxlength="15"
+                    >
+
+                    <small>
+                        Contact number of the employee.
+                    </small>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="email">
+
+                        Email Address
+
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter email address"
+                        maxlength="100"
+                    >
+
+                    <small>
+                        Employee's email address.
+                    </small>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="form-group">
+
+                    <label for="role">
+
+                        Role
+
+                    </label>
+
+                    <select
+                        id="role"
+                        name="role"
+                    >
+
+                        <option value="">
+                            Select Role
+                        </option>
+
+                        <option value="Admin">
+                            Admin
+                        </option>
+
+                        <option value="Manager">
+                            Manager
+                        </option>
+
+                        <option value="Employee">
+                            Employee
+                        </option>
+
+                        <option value="Cashier">
+                            Cashier
+                        </option>
+
+                        <option value="Sales">
+                            Sales
+                        </option>
+
+                        <option value="Inventory">
+                            Inventory
+                        </option>
+
+                    </select>
+
+                    <small>
+                        Select the employee's current role.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- EMPLOYMENT INFORMATION -->
+        <!-- ================================================= -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+
+                <h3>
+                    💼 Employment Information
+                </h3>
+
+                <p>
+                    Enter salary and joining information.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- SALARY -->
+
+                <div class="form-group">
+
+                    <label for="salary">
+
+                        Monthly Salary
+
+                    </label>
+
+                    <div class="input-with-prefix">
+
+                        <span>
+                            ₹
+                        </span>
+
+                        <input
+                            type="number"
+                            id="salary"
+                            name="salary"
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                        >
+
+                    </div>
+
+                    <small>
+                        Monthly salary of the employee.
+                    </small>
+
+                </div>
+
+
+                <!-- JOINING DATE -->
+
+                <div class="form-group">
+
+                    <label for="joining_date">
+
+                        Joining Date
+
+                    </label>
+
+                    <input
+                        type="date"
+                        id="joining_date"
+                        name="joining_date"
+                    >
+
+                    <small>
+                        Date when the employee joined.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- FORM ACTIONS -->
+        <!-- ================================================= -->
+
+        <div class="form-actions">
+
+
+            <a
+                href="{{ url_for('employees') }}"
+                class="btn btn-secondary"
+            >
+
+                Cancel
+
+            </a>
+
+
+            <button
+                type="reset"
+                class="btn btn-secondary"
+            >
+
+                Clear
+
+            </button>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+
+                + Add Employee
+
+            </button>
+
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- INFORMATION CARD -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                💡 Employee Information
+            </h2>
+
+            <p>
+                Keep employee information accurate and up to date.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+
+        <div class="alert-box info">
+
+            <strong>
+                👤 Employee Details
+            </strong>
+
+            <p>
+                Employee name is required. Phone, email,
+                role, salary and joining date are optional.
+            </p>
+
+        </div>
+
+
+        <div class="alert-box success">
+
+            <strong>
+                🔗 Transaction Tracking
+            </strong>
+
+            <p>
+                Employees can later be associated with
+                sales and purchase transactions.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- FORM VALIDATION -->
+<!-- ===================================================== -->
+
+<script>
+
+document
+    .getElementById("employeeForm")
+    .addEventListener(
+        "submit",
+        function(event) {
+
+            const name =
+                document
+                .getElementById("employee_name")
+                .value
+                .trim();
+
+
+            const salary =
+                document
+                .getElementById("salary")
+                .value;
+
+
+            // ---------------------------------------------
+            // NAME VALIDATION
+            // ---------------------------------------------
+
+            if (name.length < 2) {
+
+                alert(
+                    "Employee name must contain at least 2 characters."
+                );
+
+                event.preventDefault();
+
+                return;
+
+            }
+
+
+            // ---------------------------------------------
+            // SALARY VALIDATION
+            // ---------------------------------------------
+
+            if (
+                salary !== ""
+                &&
+                Number(salary) < 0
+            ) {
+
+                alert(
+                    "Salary cannot be negative."
+                );
+
+                event.preventDefault();
+
+                return;
+
+            }
+
+        }
+    );
+
+</script>
+
+
+{% endblock %}

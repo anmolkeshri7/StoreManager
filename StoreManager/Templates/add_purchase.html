@@ -15,6 +15,7 @@ Purchases / Add Purchase
 
 {% block content %}
 
+
 <!-- ===================================================== -->
 <!-- PAGE HEADER -->
 <!-- ===================================================== -->
@@ -24,11 +25,12 @@ Purchases / Add Purchase
     <div>
 
         <h2>
-            Create New Purchase
+            Add New Purchase
         </h2>
 
         <p>
-            Record products purchased from a supplier.
+            Record products purchased from a supplier
+            and automatically update inventory.
         </p>
 
     </div>
@@ -48,39 +50,49 @@ Purchases / Add Purchase
 <!-- PURCHASE FORM -->
 <!-- ===================================================== -->
 
-<div class="form-card">
-
-    <div class="form-header">
-
-        <h2>
-            Purchase Information
-        </h2>
-
-        <p>
-            Select a supplier and add the purchased products.
-        </p>
-
-    </div>
+<form
+    method="POST"
+    action="{{ url_for('add_purchase_page') }}"
+    id="purchaseForm"
+>
 
 
-    <form
-        method="POST"
-        action="{{ url_for('add_purchase_page') }}"
-        id="purchaseForm"
-    >
+    <!-- ================================================= -->
+    <!-- PURCHASE INFORMATION -->
+    <!-- ================================================= -->
 
+    <div class="content-card">
 
-        <!-- ================================================= -->
-        <!-- SUPPLIER -->
-        <!-- ================================================= -->
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    🧾 Purchase Information
+                </h2>
+
+                <p>
+                    Select the supplier and employee responsible
+                    for this purchase.
+                </p>
+
+            </div>
+
+        </div>
+
 
         <div class="form-grid">
 
 
+            <!-- SUPPLIER -->
+
             <div class="form-group">
 
                 <label for="supplier_id">
+
                     Supplier
+                    <span style="color: red;">*</span>
+
                 </label>
 
                 <select
@@ -109,88 +121,135 @@ Purchases / Add Purchase
             </div>
 
 
+            <!-- EMPLOYEE -->
+
+            <div class="form-group">
+
+                <label for="employee_id">
+
+                    Employee
+
+                </label>
+
+                <select
+                    id="employee_id"
+                    name="employee_id"
+                >
+
+                    <option value="">
+                        Select Employee
+                    </option>
+
+
+                    {% for employee in employees %}
+
+                    <option
+                        value="{{ employee.employee_id }}"
+                    >
+                        {{ employee.employee_name }}
+
+                        {% if employee.role %}
+                            — {{ employee.role }}
+                        {% endif %}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <small>
+                    Optional — select the employee who handled
+                    the purchase.
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PURCHASE ITEMS -->
+    <!-- ================================================= -->
+
+    <div class="content-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    📦 Purchase Items
+                </h2>
+
+                <p>
+                    Add the products, quantities and purchase prices.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                id="addItemButton"
+            >
+                + Add Product
+            </button>
+
         </div>
 
 
         <!-- ================================================= -->
-        <!-- PRODUCTS -->
+        <!-- ITEMS TABLE -->
         <!-- ================================================= -->
 
-        <div class="purchase-items-section">
+        <div class="table-container">
+
+            <table
+                id="purchaseItemsTable"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Quantity
+                        </th>
+
+                        <th>
+                            Purchase Price
+                        </th>
+
+                        <th>
+                            Subtotal
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
 
 
-            <div class="section-header">
-
-                <div>
-
-                    <h2>
-                        Purchase Items
-                    </h2>
-
-                    <p>
-                        Add one or more products to this purchase.
-                    </p>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                    id="addProductButton"
+                <tbody
+                    id="purchaseItemsBody"
                 >
-                    + Add Product
-                </button>
 
-            </div>
+                    <!-- First row is created by JavaScript -->
 
+                </tbody>
 
-            <!-- ================================================= -->
-            <!-- ITEMS TABLE -->
-            <!-- ================================================= -->
-
-            <div class="table-container">
-
-                <table id="purchaseItemsTable">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Product
-                            </th>
-
-                            <th>
-                                Quantity
-                            </th>
-
-                            <th>
-                                Purchase Price
-                            </th>
-
-                            <th>
-                                Subtotal
-                            </th>
-
-                            <th>
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="purchaseItemsBody">
-
-                        <!-- JavaScript adds rows here -->
-
-                    </tbody>
-
-                </table>
-
-            </div>
+            </table>
 
         </div>
 
@@ -199,50 +258,101 @@ Purchases / Add Purchase
         <!-- TOTAL -->
         <!-- ================================================= -->
 
-        <div class="purchase-total-card">
+        <div
+            style="
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 25px;
+            "
+        >
 
-            <div>
+            <div
+                style="
+                    min-width: 300px;
+                    padding: 20px;
+                    border-radius: 10px;
+                    background: #f8f9fa;
+                "
+            >
 
-                <span>
-                    Total Purchase Amount
-                </span>
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 10px;
+                    "
+                >
 
-                <h2 id="grandTotal">
-                    ₹0.00
-                </h2>
+                    <span>
+                        Total Items:
+                    </span>
+
+                    <strong id="totalItems">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        font-size: 20px;
+                    "
+                >
+
+                    <strong>
+                        Total Amount:
+                    </strong>
+
+                    <strong>
+                        ₹<span id="totalAmount">
+                            0.00
+                        </span>
+                    </strong>
+
+                </div>
 
             </div>
 
         </div>
 
-
-        <!-- ================================================= -->
-        <!-- FORM ACTIONS -->
-        <!-- ================================================= -->
-
-        <div class="form-actions">
-
-            <a
-                href="{{ url_for('purchases') }}"
-                class="btn btn-secondary"
-            >
-                Cancel
-            </a>
+    </div>
 
 
-            <button
-                type="submit"
-                class="btn btn-primary"
-                id="savePurchaseButton"
-            >
-                Save Purchase
-            </button>
+    <!-- ================================================= -->
+    <!-- SUBMIT -->
+    <!-- ================================================= -->
 
-        </div>
+    <div
+        style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        "
+    >
 
-    </form>
+        <a
+            href="{{ url_for('purchases') }}"
+            class="btn btn-secondary"
+        >
+            Cancel
+        </a>
 
-</div>
+
+        <button
+            type="submit"
+            class="btn btn-primary"
+        >
+            ✓ Create Purchase
+        </button>
+
+    </div>
+
+
+</form>
 
 
 <!-- ===================================================== -->
@@ -252,8 +362,10 @@ Purchases / Add Purchase
 <script>
 
     /*
-     * Product data received from Flask.
-     */
+    ========================================================
+    PRODUCT DATA
+    ========================================================
+    */
 
     const products = [
 
@@ -262,81 +374,67 @@ Purchases / Add Purchase
         {
             id: {{ product.product_id }},
             name: {{ product.product_name|tojson }},
-            purchasePrice: {{ product.purchase_price or 0 }}
+            price: {{ product.purchase_price or 0 }},
+            stock: {{ product.stock_quantity or 0 }},
+            unit: {{ (product.unit or "piece")|tojson }}
         }
 
-        {% if not loop.last %}
-        ,
-        {% endif %}
+        {% if not loop.last %},{% endif %}
 
         {% endfor %}
 
     ];
 
 
-    const itemsBody =
-        document.getElementById(
-            "purchaseItemsBody"
-        );
+    /*
+    ========================================================
+    GET PRODUCT OPTIONS
+    ========================================================
+    */
+
+    function getProductOptions() {
+
+        let options = `
+            <option value="">
+                Select Product
+            </option>
+        `;
 
 
-    const addProductButton =
-        document.getElementById(
-            "addProductButton"
-        );
+        products.forEach(function(product) {
+
+            options += `
+                <option value="${product.id}">
+                    ${product.name}
+                    — ₹${Number(product.price).toFixed(2)}
+                    / ${product.unit}
+                </option>
+            `;
+
+        });
 
 
-    const grandTotal =
-        document.getElementById(
-            "grandTotal"
-        );
+        return options;
+
+    }
 
 
-    const purchaseForm =
-        document.getElementById(
-            "purchaseForm"
-        );
+    /*
+    ========================================================
+    ADD PURCHASE ITEM
+    ========================================================
+    */
 
+    function addPurchaseItem() {
 
-    let rowNumber = 0;
-
-
-
-    // =====================================================
-    // ADD PRODUCT ROW
-    // =====================================================
-
-    function addProductRow() {
-
-        rowNumber++;
+        const tbody =
+            document.getElementById(
+                "purchaseItemsBody"
+            );
 
 
         const row =
             document.createElement("tr");
-
-
-        row.className =
-            "purchase-item-row";
-
-
-        let productOptions =
-            '<option value="">Select Product</option>';
-
-
-        products.forEach(
-            function(product) {
-
-                productOptions +=
-                    `
-                    <option
-                        value="${product.id}"
-                    >
-                        ${escapeHtml(product.name)}
-                    </option>
-                    `;
-
-            }
-        );
 
 
         row.innerHTML = `
@@ -349,7 +447,7 @@ Purchases / Add Purchase
                     required
                 >
 
-                    ${productOptions}
+                    ${getProductOptions()}
 
                 </select>
 
@@ -378,7 +476,7 @@ Purchases / Add Purchase
                     class="price-input"
                     min="0"
                     step="0.01"
-                    value="0.00"
+                    value="0"
                     required
                 >
 
@@ -387,10 +485,12 @@ Purchases / Add Purchase
 
             <td>
 
-                <strong
-                    class="subtotal"
-                >
-                    ₹0.00
+                <strong>
+
+                    ₹<span class="subtotal">
+                        0.00
+                    </span>
+
                 </strong>
 
             </td>
@@ -400,8 +500,7 @@ Purchases / Add Purchase
 
                 <button
                     type="button"
-                    class="icon-btn delete remove-item"
-                    title="Remove Product"
+                    class="btn btn-sm btn-danger remove-item"
                 >
                     🗑
                 </button>
@@ -411,8 +510,23 @@ Purchases / Add Purchase
         `;
 
 
-        itemsBody.appendChild(row);
+        tbody.appendChild(row);
 
+
+        setupRow(row);
+
+        updateTotals();
+
+    }
+
+
+    /*
+    ========================================================
+    SETUP ROW
+    ========================================================
+    */
+
+    function setupRow(row) {
 
         const productSelect =
             row.querySelector(
@@ -439,71 +553,82 @@ Purchases / Add Purchase
 
 
         /*
-         * Automatically use the product's
-         * current purchase price.
-         */
+        PRODUCT CHANGE
+        */
 
         productSelect.addEventListener(
             "change",
             function() {
 
-                const selectedId =
-                    parseInt(
+                const productId =
+                    Number(
                         productSelect.value
                     );
 
 
-                const selectedProduct =
+                const product =
                     products.find(
-                        function(product) {
+                        function(item) {
 
-                            return product.id === selectedId;
+                            return item.id === productId;
 
                         }
                     );
 
 
-                if (selectedProduct) {
+                if (product) {
 
                     priceInput.value =
                         Number(
-                            selectedProduct.purchasePrice
+                            product.price
                         ).toFixed(2);
 
                 }
 
 
-                calculateSubtotal(row);
+                updateRowTotal(row);
 
-                calculateTotal();
+                updateTotals();
 
             }
         );
 
+
+        /*
+        QUANTITY CHANGE
+        */
 
         quantityInput.addEventListener(
             "input",
             function() {
 
-                calculateSubtotal(row);
+                updateRowTotal(row);
 
-                calculateTotal();
+                updateTotals();
 
             }
         );
 
+
+        /*
+        PRICE CHANGE
+        */
 
         priceInput.addEventListener(
             "input",
             function() {
 
-                calculateSubtotal(row);
+                updateRowTotal(row);
 
-                calculateTotal();
+                updateTotals();
 
             }
         );
 
+
+        /*
+        REMOVE ROW
+        */
 
         removeButton.addEventListener(
             "click",
@@ -511,26 +636,24 @@ Purchases / Add Purchase
 
                 row.remove();
 
-                calculateTotal();
+                updateTotals();
 
             }
         );
 
-
-        calculateSubtotal(row);
-
     }
 
 
+    /*
+    ========================================================
+    UPDATE ROW TOTAL
+    ========================================================
+    */
 
-    // =====================================================
-    // CALCULATE SUBTOTAL
-    // =====================================================
-
-    function calculateSubtotal(row) {
+    function updateRowTotal(row) {
 
         const quantity =
-            parseFloat(
+            Number(
                 row.querySelector(
                     ".quantity-input"
                 ).value
@@ -538,7 +661,7 @@ Purchases / Add Purchase
 
 
         const price =
-            parseFloat(
+            Number(
                 row.querySelector(
                     ".price-input"
                 ).value
@@ -552,32 +675,38 @@ Purchases / Add Purchase
         row.querySelector(
             ".subtotal"
         ).textContent =
-            "₹" + subtotal.toFixed(2);
+            subtotal.toFixed(2);
 
     }
 
 
+    /*
+    ========================================================
+    UPDATE TOTALS
+    ========================================================
+    */
 
-    // =====================================================
-    // CALCULATE GRAND TOTAL
-    // =====================================================
-
-    function calculateTotal() {
-
-        let total = 0;
-
+    function updateTotals() {
 
         const rows =
             document.querySelectorAll(
-                ".purchase-item-row"
+                "#purchaseItemsBody tr"
             );
+
+
+        let totalAmount = 0;
+
+        let totalItems = 0;
 
 
         rows.forEach(
             function(row) {
 
+                updateRowTotal(row);
+
+
                 const quantity =
-                    parseFloat(
+                    Number(
                         row.querySelector(
                             ".quantity-input"
                         ).value
@@ -585,80 +714,70 @@ Purchases / Add Purchase
 
 
                 const price =
-                    parseFloat(
+                    Number(
                         row.querySelector(
                             ".price-input"
                         ).value
                     ) || 0;
 
 
-                total +=
+                totalItems += quantity;
+
+
+                totalAmount +=
                     quantity * price;
 
             }
         );
 
 
-        grandTotal.textContent =
-            "₹" + total.toFixed(2);
+        document.getElementById(
+            "totalItems"
+        ).textContent =
+            totalItems;
+
+
+        document.getElementById(
+            "totalAmount"
+        ).textContent =
+            totalAmount.toFixed(2);
 
     }
 
 
+    /*
+    ========================================================
+    ADD PRODUCT BUTTON
+    ========================================================
+    */
 
-    // =====================================================
-    // ESCAPE HTML
-    // =====================================================
-
-    function escapeHtml(value) {
-
-        const div =
-            document.createElement("div");
-
-
-        div.textContent = value;
-
-
-        return div.innerHTML;
-
-    }
-
-
-
-    // =====================================================
-    // ADD FIRST ROW
-    // =====================================================
-
-    addProductRow();
-
-
-
-    // =====================================================
-    // ADD PRODUCT BUTTON
-    // =====================================================
-
-    addProductButton.addEventListener(
+    document.getElementById(
+        "addItemButton"
+    ).addEventListener(
         "click",
         function() {
 
-            addProductRow();
+            addPurchaseItem();
 
         }
     );
 
 
+    /*
+    ========================================================
+    FORM VALIDATION
+    ========================================================
+    */
 
-    // =====================================================
-    // FORM VALIDATION
-    // =====================================================
-
-    purchaseForm.addEventListener(
+    document.getElementById(
+        "purchaseForm"
+    ).addEventListener(
         "submit",
         function(event) {
 
             const rows =
                 document.querySelectorAll(
-                    ".purchase-item-row"
+                    "#purchaseItemsBody tr"
                 );
 
 
@@ -688,7 +807,7 @@ Purchases / Add Purchase
 
 
                     const quantity =
-                        parseInt(
+                        Number(
                             row.querySelector(
                                 ".quantity-input"
                             ).value
@@ -696,7 +815,7 @@ Purchases / Add Purchase
 
 
                     const price =
-                        parseFloat(
+                        Number(
                             row.querySelector(
                                 ".price-input"
                             ).value
@@ -704,10 +823,8 @@ Purchases / Add Purchase
 
 
                     if (
-                        !product
-                        ||
-                        quantity <= 0
-                        ||
+                        !product ||
+                        quantity <= 0 ||
                         price < 0
                     ) {
 
@@ -724,13 +841,22 @@ Purchases / Add Purchase
                 event.preventDefault();
 
                 alert(
-                    "Please enter valid product, quantity and purchase price values."
+                    "Please check all purchase items."
                 );
 
             }
 
         }
     );
+
+
+    /*
+    ========================================================
+    CREATE FIRST ROW
+    ========================================================
+    */
+
+    addPurchaseItem();
 
 </script>
 

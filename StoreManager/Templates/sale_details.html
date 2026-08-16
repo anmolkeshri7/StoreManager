@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+{% block title %}
+Bill #{{ sale.sale_id }} - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Sale Details
+{% endblock %}
+
+{% block breadcrumb %}
+Sales / Bill #{{ sale.sale_id }}
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Bill #{{ sale.sale_id }}
+        </h2>
+
+        <p>
+            Complete details of this customer transaction.
+        </p>
+
+    </div>
+
+
+    <div class="form-actions">
+
+        <a
+            href="{{ url_for('sales') }}"
+            class="btn btn-secondary"
+        >
+            ← Back to Sales
+        </a>
+
+
+        <button
+            type="button"
+            class="btn btn-primary"
+            onclick="window.print()"
+        >
+            🖨 Print Bill
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- BILL -->
+<!-- ===================================================== -->
+
+<div class="content-card bill-container">
+
+
+    <!-- ================================================= -->
+    <!-- BILL HEADER -->
+    <!-- ================================================= -->
+
+    <div class="bill-header">
+
+        <div>
+
+            <h1>
+                STORE MANAGER
+            </h1>
+
+            <p>
+                Store Management System
+            </p>
+
+        </div>
+
+
+        <div class="bill-info">
+
+            <p>
+                <strong>Bill No:</strong>
+                #{{ sale.sale_id }}
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                {{ sale.sale_date }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- CUSTOMER -->
+    <!-- ================================================= -->
+
+    <div class="bill-customer">
+
+        <div>
+
+            <span>
+                Customer
+            </span>
+
+            <strong>
+                {{ sale.customer_name
+                or "Walk-in Customer" }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Payment
+            </span>
+
+            <strong>
+
+                {% if payments %}
+
+                    {{ payments[0].payment_method }}
+
+                {% else %}
+
+                    Not Available
+
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- PRODUCTS -->
+    <!-- ================================================= -->
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Product
+                    </th>
+
+                    <th>
+                        Quantity
+                    </th>
+
+                    <th>
+                        Price
+                    </th>
+
+                    <th>
+                        Subtotal
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in details %}
+
+                <tr>
+
+                    <td>
+                        {{ loop.index }}
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            {{ item.product_name
+                            or "Unknown Product" }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+                        {{ item.quantity }}
+                    </td>
+
+
+                    <td>
+                        ₹{{ "%.2f"|format(
+                            item.selling_price
+                        ) }}
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                item.subtotal
+                            ) }}
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="empty-state"
+                    >
+
+                        No products found for this sale.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- BILL SUMMARY -->
+    <!-- ================================================= -->
+
+    <div class="bill-summary-container">
+
+        <div class="bill-summary">
+
+
+            <div class="summary-row">
+
+                <span>
+                    Subtotal
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(
+                        sale.total_amount or 0
+                    ) }}
+                </strong>
+
+            </div>
+
+
+            <div class="summary-row">
+
+                <span>
+                    Discount
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(
+                        sale.discount or 0
+                    ) }}
+                </strong>
+
+            </div>
+
+
+            <div class="summary-row">
+
+                <span>
+                    Tax
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(
+                        sale.tax or 0
+                    ) }}
+                </strong>
+
+            </div>
+
+
+            <div class="summary-row final-row">
+
+                <span>
+                    Final Amount
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(
+                        sale.final_amount or 0
+                    ) }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- PAYMENT INFORMATION -->
+    <!-- ================================================= -->
+
+    <div class="payment-information">
+
+        <h3>
+            Payment Information
+        </h3>
+
+
+        {% for payment in payments %}
+
+        <div class="summary-row">
+
+            <span>
+                Payment Method
+            </span>
+
+            <strong>
+                {{ payment.payment_method }}
+            </strong>
+
+        </div>
+
+
+        <div class="summary-row">
+
+            <span>
+                Amount Paid
+            </span>
+
+            <strong>
+                ₹{{ "%.2f"|format(
+                    payment.amount or 0
+                ) }}
+            </strong>
+
+        </div>
+
+
+        <div class="summary-row">
+
+            <span>
+                Payment Status
+            </span>
+
+            <strong>
+                {{ payment.payment_status }}
+            </strong>
+
+        </div>
+
+
+        {% endfor %}
+
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- FOOTER -->
+    <!-- ================================================= -->
+
+    <div class="bill-footer">
+
+        <p>
+            Thank you for shopping with us!
+        </p>
+
+        <small>
+            This is a computer-generated bill.
+        </small>
+
+    </div>
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- DELETE SALE -->
+<!-- ===================================================== -->
+
+<div class="form-actions">
+
+    <a
+        href="{{ url_for('sales') }}"
+        class="btn btn-secondary"
+    >
+        ← Back to Sales
+    </a>
+
+
+    <form
+        method="POST"
+        action="{{ url_for(
+            'delete_sale_page',
+            sale_id=sale.sale_id
+        ) }}"
+        onsubmit="return confirm(
+            'Deleting this sale will restore the sold quantity to product stock. Are you sure?'
+        );"
+    >
+
+        <button
+            type="submit"
+            class="btn btn-danger"
+        >
+            Delete Sale
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- PRINT CSS -->
+<!-- ===================================================== -->
+
+<style>
+
+    @media print {
+
+        body {
+            background: white !important;
+        }
+
+
+        .sidebar,
+        .navbar,
+        .page-header,
+        .form-actions,
+        button {
+            display: none !important;
+        }
+
+
+        .main-content {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+
+        .content-card {
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+
+        .bill-container {
+            width: 100%;
+            margin: 0;
+        }
+
+    }
+
+</style>
+
+
+{% endblock %}

@@ -29,7 +29,7 @@ Purchases / Purchase #{{ purchase.purchase_id }}
         </h2>
 
         <p>
-            Detailed information about this purchase.
+            Complete details of this supplier purchase.
         </p>
 
     </div>
@@ -45,9 +45,8 @@ Purchases / Purchase #{{ purchase.purchase_id }}
 </div>
 
 
-
 <!-- ===================================================== -->
-<!-- PURCHASE INFORMATION -->
+<!-- PURCHASE SUMMARY -->
 <!-- ===================================================== -->
 
 <div class="stats-grid">
@@ -58,7 +57,7 @@ Purchases / Purchase #{{ purchase.purchase_id }}
     <div class="stat-card">
 
         <div class="stat-icon blue">
-            #
+            🧾
         </div>
 
         <div>
@@ -76,23 +75,34 @@ Purchases / Purchase #{{ purchase.purchase_id }}
     </div>
 
 
-
-    <!-- SUPPLIER -->
+    <!-- TOTAL ITEMS -->
 
     <div class="stat-card">
 
-        <div class="stat-icon orange">
-            🚚
+        <div class="stat-icon purple">
+            📦
         </div>
 
         <div>
 
             <span>
-                Supplier
+                Total Items
             </span>
 
             <h3>
-                {{ purchase.supplier_name or "Unknown" }}
+
+                {% set total_items = namespace(value=0) %}
+
+                {% for item in details %}
+
+                    {% set total_items.value =
+                        total_items.value
+                        + (item.quantity or 0) %}
+
+                {% endfor %}
+
+                {{ total_items.value }}
+
             </h3>
 
         </div>
@@ -100,23 +110,22 @@ Purchases / Purchase #{{ purchase.purchase_id }}
     </div>
 
 
-
-    <!-- DATE -->
+    <!-- PRODUCTS -->
 
     <div class="stat-card">
 
         <div class="stat-icon green">
-            📅
+            🛒
         </div>
 
         <div>
 
             <span>
-                Purchase Date
+                Products
             </span>
 
             <h3>
-                {{ purchase.purchase_date }}
+                {{ details|length }}
             </h3>
 
         </div>
@@ -124,13 +133,12 @@ Purchases / Purchase #{{ purchase.purchase_id }}
     </div>
 
 
-
-    <!-- TOTAL -->
+    <!-- TOTAL AMOUNT -->
 
     <div class="stat-card">
 
-        <div class="stat-icon red">
-            ₹
+        <div class="stat-icon orange">
+            💰
         </div>
 
         <div>
@@ -152,6 +160,135 @@ Purchases / Purchase #{{ purchase.purchase_id }}
 </div>
 
 
+<!-- ===================================================== -->
+<!-- PURCHASE INFORMATION -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                🧾 Purchase Information
+            </h2>
+
+            <p>
+                Supplier and transaction information.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-grid">
+
+
+        <!-- SUPPLIER -->
+
+        <div class="form-group">
+
+            <label>
+                Supplier
+            </label>
+
+            <div class="detail-value">
+
+                {% if purchase.supplier_name %}
+
+                    {{ purchase.supplier_name }}
+
+                {% else %}
+
+                    Supplier #{{ purchase.supplier_id }}
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- EMPLOYEE -->
+
+        <div class="form-group">
+
+            <label>
+                Employee
+            </label>
+
+            <div class="detail-value">
+
+                {% if purchase.employee_name %}
+
+                    {{ purchase.employee_name }}
+
+                {% else %}
+
+                    <span class="text-muted">
+                        Not specified
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- DATE -->
+
+        <div class="form-group">
+
+            <label>
+                Purchase Date
+            </label>
+
+            <div class="detail-value">
+
+                {% if purchase.purchase_date %}
+
+                    {{ purchase.purchase_date }}
+
+                {% else %}
+
+                    <span class="text-muted">
+                        Not specified
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- PURCHASE TOTAL -->
+
+        <div class="form-group">
+
+            <label>
+                Purchase Total
+            </label>
+
+            <div class="detail-value">
+
+                <strong>
+                    ₹{{ "%.2f"|format(
+                        purchase.total_amount or 0
+                    ) }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 <!-- ===================================================== -->
 <!-- PURCHASE ITEMS -->
@@ -159,15 +296,12 @@ Purchases / Purchase #{{ purchase.purchase_id }}
 
 <div class="content-card">
 
-
-    <!-- HEADER -->
-
     <div class="card-header">
 
         <div>
 
             <h2>
-                Purchased Products
+                📦 Purchased Products
             </h2>
 
             <p>
@@ -176,16 +310,21 @@ Purchases / Purchase #{{ purchase.purchase_id }}
 
         </div>
 
+
+        <span class="record-count">
+
+            {{ details|length }}
+
+            product(s)
+
+        </span>
+
     </div>
 
-
-
-    <!-- TABLE -->
 
     <div class="table-container">
 
         <table>
-
 
             <thead>
 
@@ -216,7 +355,6 @@ Purchases / Purchase #{{ purchase.purchase_id }}
             </thead>
 
 
-
             <tbody>
 
 
@@ -225,44 +363,34 @@ Purchases / Purchase #{{ purchase.purchase_id }}
                 <tr>
 
 
-                    <!-- DETAIL ID -->
+                    <!-- NUMBER -->
 
                     <td>
 
-                        {{ loop.index }}
+                        <strong>
+                            {{ loop.index }}
+                        </strong>
 
                     </td>
-
 
 
                     <!-- PRODUCT -->
 
                     <td>
 
-                        <div class="product-name">
+                        {% if item.product_name %}
 
-                            <div class="product-image">
-                                📦
-                            </div>
+                            <strong>
+                                {{ item.product_name }}
+                            </strong>
 
-                            <div>
+                        {% else %}
 
-                                <strong>
-                                    {{ item.product_name
-                                    or "Unknown Product" }}
-                                </strong>
+                            Product #{{ item.product_id }}
 
-                                <small>
-                                    Product ID:
-                                    {{ item.product_id }}
-                                </small>
-
-                            </div>
-
-                        </div>
+                        {% endif %}
 
                     </td>
-
 
 
                     <!-- QUANTITY -->
@@ -276,17 +404,15 @@ Purchases / Purchase #{{ purchase.purchase_id }}
                     </td>
 
 
-
-                    <!-- PURCHASE PRICE -->
+                    <!-- PRICE -->
 
                     <td>
 
                         ₹{{ "%.2f"|format(
-                            item.purchase_price
+                            item.purchase_price or 0
                         ) }}
 
                     </td>
-
 
 
                     <!-- SUBTOTAL -->
@@ -294,9 +420,11 @@ Purchases / Purchase #{{ purchase.purchase_id }}
                     <td>
 
                         <strong>
+
                             ₹{{ "%.2f"|format(
-                                item.subtotal
+                                item.subtotal or 0
                             ) }}
+
                         </strong>
 
                     </td>
@@ -308,8 +436,6 @@ Purchases / Purchase #{{ purchase.purchase_id }}
                 {% else %}
 
 
-                <!-- NO ITEMS -->
-
                 <tr>
 
                     <td
@@ -317,13 +443,22 @@ Purchases / Purchase #{{ purchase.purchase_id }}
                         class="empty-state"
                     >
 
-                        <div>
+                        <div
+                            style="
+                                font-size: 40px;
+                                margin-bottom: 10px;
+                            "
+                        >
                             📦
                         </div>
 
                         <h3>
-                            No purchase items found
+                            No Purchase Items
                         </h3>
+
+                        <p>
+                            No products were found for this purchase.
+                        </p>
 
                     </td>
 
@@ -336,29 +471,61 @@ Purchases / Purchase #{{ purchase.purchase_id }}
             </tbody>
 
 
-            <!-- TOTAL -->
+            {% if details %}
 
             <tfoot>
 
                 <tr>
 
                     <td
-                        colspan="4"
+                        colspan="2"
                         style="text-align: right;"
                     >
 
                         <strong>
-                            Total:
+                            Total
                         </strong>
 
                     </td>
 
+
                     <td>
 
                         <strong>
+
+                            {% set total_quantity =
+                                namespace(value=0) %}
+
+                            {% for item in details %}
+
+                                {% set total_quantity.value =
+                                    total_quantity.value
+                                    + (item.quantity or 0) %}
+
+                            {% endfor %}
+
+                            {{ total_quantity.value }}
+
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        —
+
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+
                             ₹{{ "%.2f"|format(
                                 purchase.total_amount or 0
                             ) }}
+
                         </strong>
 
                     </td>
@@ -367,6 +534,7 @@ Purchases / Purchase #{{ purchase.purchase_id }}
 
             </tfoot>
 
+            {% endif %}
 
         </table>
 
@@ -375,13 +543,80 @@ Purchases / Purchase #{{ purchase.purchase_id }}
 </div>
 
 
+<!-- ===================================================== -->
+<!-- INVENTORY INFORMATION -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                📈 Inventory Impact
+            </h2>
+
+            <p>
+                This purchase affects product stock automatically.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+
+        <div class="alert-box success">
+
+            <strong>
+                📦 Stock Increased
+            </strong>
+
+            <p>
+                The quantities listed above were added to
+                the corresponding product inventory when
+                this purchase was created.
+            </p>
+
+        </div>
+
+
+        <div class="alert-box info">
+
+            <strong>
+                🔄 Transaction Reversal
+            </strong>
+
+            <p>
+                If this purchase is deleted, the purchased
+                quantities are removed from product stock.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 <!-- ===================================================== -->
 <!-- ACTIONS -->
 <!-- ===================================================== -->
 
-<div class="form-actions">
+<div
+    style="
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    "
+>
 
+
+    <!-- BACK -->
 
     <a
         href="{{ url_for('purchases') }}"
@@ -391,26 +626,31 @@ Purchases / Purchase #{{ purchase.purchase_id }}
     </a>
 
 
+    <!-- DELETE -->
+
     <form
-        method="POST"
         action="{{ url_for(
             'delete_purchase_page',
             purchase_id=purchase.purchase_id
         ) }}"
-
-        onsubmit="return confirm(
-            'Deleting this purchase will also reduce the stock added by this purchase. Are you sure?'
-        );"
+        method="POST"
+        style="display: inline;"
+        onsubmit="
+            return confirm(
+                'Are you sure you want to delete this purchase? The purchased quantities will be removed from product stock.'
+            );
+        "
     >
 
         <button
             type="submit"
             class="btn btn-danger"
         >
-            Delete Purchase
+            🗑 Delete Purchase
         </button>
 
     </form>
+
 
 </div>
 

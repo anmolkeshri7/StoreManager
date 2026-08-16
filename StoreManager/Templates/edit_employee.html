@@ -1,0 +1,525 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Employee - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Edit Employee
+{% endblock %}
+
+{% block breadcrumb %}
+Employees / Edit Employee
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Edit Employee
+        </h2>
+
+        <p>
+            Update employee information and employment details.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('employees') }}"
+        class="btn btn-secondary"
+    >
+
+        ← Back to Employees
+
+    </a>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- EMPLOYEE FORM -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                Employee Information
+            </h2>
+
+            <p>
+                Update the information for
+                <strong>{{ employee.employee_name }}</strong>.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        action="{{ url_for(
+            'edit_employee_page',
+            employee_id=employee.employee_id
+        ) }}"
+        method="POST"
+        id="editEmployeeForm"
+    >
+
+
+        <!-- ================================================= -->
+        <!-- BASIC INFORMATION -->
+        <!-- ================================================= -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+
+                <h3>
+                    👤 Basic Information
+                </h3>
+
+                <p>
+                    Update the employee's personal details.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- EMPLOYEE NAME -->
+
+                <div class="form-group">
+
+                    <label for="employee_name">
+
+                        Employee Name
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="employee_name"
+                        name="employee_name"
+                        value="{{ employee.employee_name }}"
+                        placeholder="Enter employee name"
+                        maxlength="150"
+                        required
+                    >
+
+                    <small>
+                        Full name of the employee.
+                    </small>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+
+                        Phone Number
+
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value="{{ employee.phone or '' }}"
+                        placeholder="Enter phone number"
+                        maxlength="15"
+                    >
+
+                    <small>
+                        Contact number of the employee.
+                    </small>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="email">
+
+                        Email Address
+
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ employee.email or '' }}"
+                        placeholder="Enter email address"
+                        maxlength="100"
+                    >
+
+                    <small>
+                        Employee's email address.
+                    </small>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="form-group">
+
+                    <label for="role">
+
+                        Role
+
+                    </label>
+
+                    <select
+                        id="role"
+                        name="role"
+                    >
+
+                        <option value="">
+                            Select Role
+                        </option>
+
+                        <option
+                            value="Admin"
+                            {% if employee.role == "Admin" %}
+                            selected
+                            {% endif %}
+                        >
+                            Admin
+                        </option>
+
+                        <option
+                            value="Manager"
+                            {% if employee.role == "Manager" %}
+                            selected
+                            {% endif %}
+                        >
+                            Manager
+                        </option>
+
+                        <option
+                            value="Employee"
+                            {% if employee.role == "Employee" %}
+                            selected
+                            {% endif %}
+                        >
+                            Employee
+                        </option>
+
+                        <option
+                            value="Cashier"
+                            {% if employee.role == "Cashier" %}
+                            selected
+                            {% endif %}
+                        >
+                            Cashier
+                        </option>
+
+                        <option
+                            value="Sales"
+                            {% if employee.role == "Sales" %}
+                            selected
+                            {% endif %}
+                        >
+                            Sales
+                        </option>
+
+                        <option
+                            value="Inventory"
+                            {% if employee.role == "Inventory" %}
+                            selected
+                            {% endif %}
+                        >
+                            Inventory
+                        </option>
+
+                    </select>
+
+                    <small>
+                        Select the employee's current role.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- EMPLOYMENT INFORMATION -->
+        <!-- ================================================= -->
+
+        <div class="form-section">
+
+            <div class="form-section-title">
+
+                <h3>
+                    💼 Employment Information
+                </h3>
+
+                <p>
+                    Update salary and joining information.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- SALARY -->
+
+                <div class="form-group">
+
+                    <label for="salary">
+
+                        Monthly Salary
+
+                    </label>
+
+                    <div class="input-with-prefix">
+
+                        <span>
+                            ₹
+                        </span>
+
+                        <input
+                            type="number"
+                            id="salary"
+                            name="salary"
+                            value="{{ employee.salary or 0 }}"
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                        >
+
+                    </div>
+
+                    <small>
+                        Monthly salary of the employee.
+                    </small>
+
+                </div>
+
+
+                <!-- JOINING DATE -->
+
+                <div class="form-group">
+
+                    <label for="joining_date">
+
+                        Joining Date
+
+                    </label>
+
+                    <input
+                        type="date"
+                        id="joining_date"
+                        name="joining_date"
+                        value="{% if employee.joining_date %}{{ employee.joining_date.strftime('%Y-%m-%d') }}{% endif %}"
+                    >
+
+                    <small>
+                        Date when the employee joined.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- EMPLOYEE ID -->
+        <!-- ================================================= -->
+
+        <div class="alert-box info">
+
+            <strong>
+                Employee ID: #{{ employee.employee_id }}
+            </strong>
+
+            <p>
+                The employee ID cannot be changed because
+                it is used to identify this employee in
+                the database and transaction records.
+            </p>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- FORM ACTIONS -->
+        <!-- ================================================= -->
+
+        <div class="form-actions">
+
+
+            <a
+                href="{{ url_for('employees') }}"
+                class="btn btn-secondary"
+            >
+
+                Cancel
+
+            </a>
+
+
+            <button
+                type="reset"
+                class="btn btn-secondary"
+            >
+
+                Reset
+
+            </button>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+
+                💾 Save Changes
+
+            </button>
+
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- WARNING / INFORMATION -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                ⚠️ Important
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div class="alert-box warning">
+
+        <strong>
+            Existing transaction records will not be changed.
+        </strong>
+
+        <p>
+            Updating this employee changes their current
+            information only. Existing sales and purchase
+            records continue to use their stored employee ID.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- FORM VALIDATION -->
+<!-- ===================================================== -->
+
+<script>
+
+document
+    .getElementById("editEmployeeForm")
+    .addEventListener(
+        "submit",
+        function(event) {
+
+            const name =
+                document
+                .getElementById("employee_name")
+                .value
+                .trim();
+
+
+            const salary =
+                document
+                .getElementById("salary")
+                .value;
+
+
+            // ---------------------------------------------
+            // NAME VALIDATION
+            // ---------------------------------------------
+
+            if (name.length < 2) {
+
+                alert(
+                    "Employee name must contain at least 2 characters."
+                );
+
+                event.preventDefault();
+
+                return;
+
+            }
+
+
+            // ---------------------------------------------
+            // SALARY VALIDATION
+            // ---------------------------------------------
+
+            if (
+                salary !== ""
+                &&
+                Number(salary) < 0
+            ) {
+
+                alert(
+                    "Salary cannot be negative."
+                );
+
+                event.preventDefault();
+
+                return;
+
+            }
+
+        }
+    );
+
+</script>
+
+
+{% endblock %}

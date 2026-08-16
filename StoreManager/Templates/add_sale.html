@@ -1,0 +1,1198 @@
+{% extends "base.html" %}
+
+{% block title %}
+New Sale - Store Manager
+{% endblock %}
+
+{% block page_title %}
+New Sale
+{% endblock %}
+
+{% block breadcrumb %}
+Sales / New Sale
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Create New Sale
+        </h2>
+
+        <p>
+            Create a bill and record the customer payment.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('sales') }}"
+        class="btn btn-secondary"
+    >
+        ← Back to Sales
+    </a>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SALE FORM -->
+<!-- ===================================================== -->
+
+<div class="form-card">
+
+    <div class="form-header">
+
+        <h2>
+            Billing Information
+        </h2>
+
+        <p>
+            Select a customer and add the products being sold.
+        </p>
+
+    </div>
+
+
+    <form
+        method="POST"
+        action="{{ url_for('add_sale_page') }}"
+        id="saleForm"
+    >
+
+
+        <!-- ================================================= -->
+        <!-- CUSTOMER -->
+        <!-- ================================================= -->
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label for="customer_id">
+                    Customer
+                </label>
+
+                <select
+                    id="customer_id"
+                    name="customer_id"
+                >
+
+                    <option value="">
+                        Walk-in Customer
+                    </option>
+
+
+                    {% for customer in customers %}
+
+                    <option
+                        value="{{ customer.customer_id }}"
+                    >
+                        {{ customer.customer_name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- PRODUCTS -->
+        <!-- ================================================= -->
+
+        <div class="purchase-items-section">
+
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Sale Items
+                    </h2>
+
+                    <p>
+                        Add the products being sold.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="addProductButton"
+                >
+                    + Add Product
+                </button>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- ITEMS TABLE -->
+            <!-- ================================================= -->
+
+            <div class="table-container">
+
+                <table id="saleItemsTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Available Stock
+                            </th>
+
+                            <th>
+                                Quantity
+                            </th>
+
+                            <th>
+                                Selling Price
+                            </th>
+
+                            <th>
+                                Subtotal
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="saleItemsBody">
+
+                        <!-- JavaScript adds rows -->
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- BILL SUMMARY -->
+        <!-- ================================================= -->
+
+        <div class="purchase-total-card">
+
+
+            <div class="bill-summary">
+
+
+                <!-- SUBTOTAL -->
+
+                <div class="summary-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <strong id="subtotalAmount">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+
+                <!-- DISCOUNT -->
+
+                <div class="summary-row">
+
+                    <label for="discount">
+                        Discount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="discount"
+                        name="discount"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                    >
+
+                </div>
+
+
+                <!-- TAX -->
+
+                <div class="summary-row">
+
+                    <label for="tax">
+                        Tax
+                    </label>
+
+                    <input
+                        type="number"
+                        id="tax"
+                        name="tax"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                    >
+
+                </div>
+
+
+                <!-- FINAL AMOUNT -->
+
+                <div class="summary-row final-row">
+
+                    <span>
+                        Final Amount
+                    </span>
+
+                    <strong id="finalAmount">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- PAYMENT -->
+        <!-- ================================================= -->
+
+        <div class="form-grid payment-section">
+
+
+            <!-- PAYMENT METHOD -->
+
+            <div class="form-group">
+
+                <label for="payment_method">
+                    Payment Method
+                </label>
+
+                <select
+                    id="payment_method"
+                    name="payment_method"
+                    required
+                >
+
+                    <option value="">
+                        Select Payment Method
+                    </option>
+
+                    <option value="Cash">
+                        Cash
+                    </option>
+
+                    <option value="Card">
+                        Card
+                    </option>
+
+                    <option value="UPI">
+                        UPI
+                    </option>
+
+                    <option value="Bank Transfer">
+                        Bank Transfer
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- AMOUNT PAID -->
+
+            <div class="form-group">
+
+                <label for="payment_amount">
+                    Amount Paid
+                </label>
+
+                <input
+                    type="number"
+                    id="payment_amount"
+                    name="payment_amount"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    required
+                >
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- PAYMENT SUMMARY -->
+        <!-- ================================================= -->
+
+        <div class="purchase-total-card">
+
+            <div class="bill-summary">
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Amount to Pay
+                    </span>
+
+                    <strong id="amountToPay">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Amount Paid
+                    </span>
+
+                    <strong id="paidDisplay">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Balance / Change
+                    </span>
+
+                    <strong id="balanceAmount">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- FORM ACTIONS -->
+        <!-- ================================================= -->
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('sales') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="completeSaleButton"
+            >
+                Complete Sale
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+    /*
+     * Product data from Flask.
+     */
+
+    const products = [
+
+        {% for product in products %}
+
+        {
+            id: {{ product.product_id }},
+
+            name: {{ product.product_name|tojson }},
+
+            sellingPrice:
+                {{ product.selling_price or 0 }},
+
+            stock:
+                {{ product.stock_quantity or 0 }}
+        }
+
+        {% if not loop.last %}
+        ,
+        {% endif %}
+
+        {% endfor %}
+
+    ];
+
+
+    const saleItemsBody =
+        document.getElementById(
+            "saleItemsBody"
+        );
+
+
+    const addProductButton =
+        document.getElementById(
+            "addProductButton"
+        );
+
+
+    const saleForm =
+        document.getElementById(
+            "saleForm"
+        );
+
+
+    const discountInput =
+        document.getElementById(
+            "discount"
+        );
+
+
+    const taxInput =
+        document.getElementById(
+            "tax"
+        );
+
+
+    const paymentInput =
+        document.getElementById(
+            "payment_amount"
+        );
+
+
+    const subtotalAmount =
+        document.getElementById(
+            "subtotalAmount"
+        );
+
+
+    const finalAmount =
+        document.getElementById(
+            "finalAmount"
+        );
+
+
+    const amountToPay =
+        document.getElementById(
+            "amountToPay"
+        );
+
+
+    const paidDisplay =
+        document.getElementById(
+            "paidDisplay"
+        );
+
+
+    const balanceAmount =
+        document.getElementById(
+            "balanceAmount"
+        );
+
+
+    // =====================================================
+    // ADD PRODUCT ROW
+    // =====================================================
+
+    function addProductRow() {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.className =
+            "sale-item-row";
+
+
+        let productOptions =
+            '<option value="">Select Product</option>';
+
+
+        products.forEach(
+            function(product) {
+
+                productOptions +=
+                    `
+                    <option
+                        value="${product.id}"
+                    >
+                        ${escapeHtml(product.name)}
+                    </option>
+                    `;
+
+            }
+        );
+
+
+        row.innerHTML = `
+
+            <td>
+
+                <select
+                    name="product_id[]"
+                    class="product-select"
+                    required
+                >
+
+                    ${productOptions}
+
+                </select>
+
+            </td>
+
+
+            <td>
+
+                <span
+                    class="stock-display"
+                >
+                    -
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <input
+                    type="number"
+                    name="quantity[]"
+                    class="quantity-input"
+                    min="1"
+                    value="1"
+                    required
+                >
+
+            </td>
+
+
+            <td>
+
+                <input
+                    type="number"
+                    name="selling_price[]"
+                    class="price-input"
+                    min="0"
+                    step="0.01"
+                    value="0.00"
+                    required
+                >
+
+            </td>
+
+
+            <td>
+
+                <strong
+                    class="subtotal"
+                >
+                    ₹0.00
+                </strong>
+
+            </td>
+
+
+            <td>
+
+                <button
+                    type="button"
+                    class="icon-btn delete remove-item"
+                    title="Remove Product"
+                >
+                    🗑
+                </button>
+
+            </td>
+
+        `;
+
+
+        saleItemsBody.appendChild(row);
+
+
+        const productSelect =
+            row.querySelector(
+                ".product-select"
+            );
+
+
+        const quantityInput =
+            row.querySelector(
+                ".quantity-input"
+            );
+
+
+        const priceInput =
+            row.querySelector(
+                ".price-input"
+            );
+
+
+        const stockDisplay =
+            row.querySelector(
+                ".stock-display"
+            );
+
+
+        const removeButton =
+            row.querySelector(
+                ".remove-item"
+            );
+
+
+        // =================================================
+        // PRODUCT CHANGE
+        // =================================================
+
+        productSelect.addEventListener(
+            "change",
+            function() {
+
+                const selectedId =
+                    parseInt(
+                        productSelect.value
+                    );
+
+
+                const selectedProduct =
+                    products.find(
+                        function(product) {
+
+                            return product.id === selectedId;
+
+                        }
+                    );
+
+
+                if (selectedProduct) {
+
+                    priceInput.value =
+                        Number(
+                            selectedProduct.sellingPrice
+                        ).toFixed(2);
+
+
+                    stockDisplay.textContent =
+                        selectedProduct.stock;
+
+
+                    quantityInput.max =
+                        selectedProduct.stock;
+
+                }
+
+                else {
+
+                    priceInput.value =
+                        "0.00";
+
+                    stockDisplay.textContent =
+                        "-";
+
+                    quantityInput.removeAttribute(
+                        "max"
+                    );
+
+                }
+
+
+                calculateSubtotal(row);
+
+                calculateBill();
+
+            }
+        );
+
+
+        // =================================================
+        // QUANTITY CHANGE
+        // =================================================
+
+        quantityInput.addEventListener(
+            "input",
+            function() {
+
+                const selectedId =
+                    parseInt(
+                        productSelect.value
+                    );
+
+
+                const selectedProduct =
+                    products.find(
+                        function(product) {
+
+                            return product.id === selectedId;
+
+                        }
+                    );
+
+
+                if (
+                    selectedProduct
+                    &&
+                    parseInt(
+                        quantityInput.value
+                    ) >
+                    selectedProduct.stock
+                ) {
+
+                    quantityInput.value =
+                        selectedProduct.stock;
+
+                }
+
+
+                calculateSubtotal(row);
+
+                calculateBill();
+
+            }
+        );
+
+
+        // =================================================
+        // PRICE CHANGE
+        // =================================================
+
+        priceInput.addEventListener(
+            "input",
+            function() {
+
+                calculateSubtotal(row);
+
+                calculateBill();
+
+            }
+        );
+
+
+        // =================================================
+        // REMOVE ROW
+        // =================================================
+
+        removeButton.addEventListener(
+            "click",
+            function() {
+
+                row.remove();
+
+                calculateBill();
+
+            }
+        );
+
+
+        calculateSubtotal(row);
+
+    }
+
+
+    // =====================================================
+    // CALCULATE SUBTOTAL
+    // =====================================================
+
+    function calculateSubtotal(row) {
+
+        const quantity =
+            parseFloat(
+                row.querySelector(
+                    ".quantity-input"
+                ).value
+            ) || 0;
+
+
+        const price =
+            parseFloat(
+                row.querySelector(
+                    ".price-input"
+                ).value
+            ) || 0;
+
+
+        const subtotal =
+            quantity * price;
+
+
+        row.querySelector(
+            ".subtotal"
+        ).textContent =
+            "₹" + subtotal.toFixed(2);
+
+    }
+
+
+    // =====================================================
+    // CALCULATE BILL
+    // =====================================================
+
+    function calculateBill() {
+
+        let subtotal = 0;
+
+
+        const rows =
+            document.querySelectorAll(
+                ".sale-item-row"
+            );
+
+
+        rows.forEach(
+            function(row) {
+
+                const quantity =
+                    parseFloat(
+                        row.querySelector(
+                            ".quantity-input"
+                        ).value
+                    ) || 0;
+
+
+                const price =
+                    parseFloat(
+                        row.querySelector(
+                            ".price-input"
+                        ).value
+                    ) || 0;
+
+
+                subtotal +=
+                    quantity * price;
+
+            }
+        );
+
+
+        let discount =
+            parseFloat(
+                discountInput.value
+            ) || 0;
+
+
+        let tax =
+            parseFloat(
+                taxInput.value
+            ) || 0;
+
+
+        if (discount < 0) {
+
+            discount = 0;
+
+        }
+
+
+        if (tax < 0) {
+
+            tax = 0;
+
+        }
+
+
+        const final =
+            subtotal
+            - discount
+            + tax;
+
+
+        const paid =
+            parseFloat(
+                paymentInput.value
+            ) || 0;
+
+
+        const balance =
+            paid - final;
+
+
+        subtotalAmount.textContent =
+            "₹" + subtotal.toFixed(2);
+
+
+        finalAmount.textContent =
+            "₹" + Math.max(
+                final,
+                0
+            ).toFixed(2);
+
+
+        amountToPay.textContent =
+            "₹" + Math.max(
+                final,
+                0
+            ).toFixed(2);
+
+
+        paidDisplay.textContent =
+            "₹" + paid.toFixed(2);
+
+
+        balanceAmount.textContent =
+            "₹" + balance.toFixed(2);
+
+    }
+
+
+    // =====================================================
+    // ESCAPE HTML
+    // =====================================================
+
+    function escapeHtml(value) {
+
+        const div =
+            document.createElement("div");
+
+
+        div.textContent =
+            value;
+
+
+        return div.innerHTML;
+
+    }
+
+
+    // =====================================================
+    // EVENTS
+    // =====================================================
+
+    discountInput.addEventListener(
+        "input",
+        calculateBill
+    );
+
+
+    taxInput.addEventListener(
+        "input",
+        calculateBill
+    );
+
+
+    paymentInput.addEventListener(
+        "input",
+        calculateBill
+    );
+
+
+    addProductButton.addEventListener(
+        "click",
+        addProductRow
+    );
+
+
+    // =====================================================
+    // FORM VALIDATION
+    // =====================================================
+
+    saleForm.addEventListener(
+        "submit",
+        function(event) {
+
+            const rows =
+                document.querySelectorAll(
+                    ".sale-item-row"
+                );
+
+
+            if (rows.length === 0) {
+
+                event.preventDefault();
+
+                alert(
+                    "Please add at least one product."
+                );
+
+                return;
+
+            }
+
+
+            let valid = true;
+
+
+            rows.forEach(
+                function(row) {
+
+                    const productId =
+                        row.querySelector(
+                            ".product-select"
+                        ).value;
+
+
+                    const quantity =
+                        parseInt(
+                            row.querySelector(
+                                ".quantity-input"
+                            ).value
+                        );
+
+
+                    const price =
+                        parseFloat(
+                            row.querySelector(
+                                ".price-input"
+                            ).value
+                        );
+
+
+                    const product =
+                        products.find(
+                            function(item) {
+
+                                return item.id ===
+                                    parseInt(productId);
+
+                            }
+                        );
+
+
+                    if (
+                        !productId
+                        ||
+                        quantity <= 0
+                        ||
+                        price < 0
+                    ) {
+
+                        valid = false;
+
+                    }
+
+
+                    if (
+                        product
+                        &&
+                        quantity >
+                        product.stock
+                    ) {
+
+                        valid = false;
+
+                        alert(
+                            "Quantity exceeds available stock for " +
+                            product.name +
+                            ". Available stock: " +
+                            product.stock
+                        );
+
+                    }
+
+                }
+            );
+
+
+            const final =
+                parseFloat(
+                    finalAmount.textContent
+                        .replace("₹", "")
+                ) || 0;
+
+
+            const paid =
+                parseFloat(
+                    paymentInput.value
+                ) || 0;
+
+
+            if (!valid) {
+
+                event.preventDefault();
+
+                alert(
+                    "Please enter valid product, quantity and price values."
+                );
+
+                return;
+
+            }
+
+
+            if (final < 0) {
+
+                event.preventDefault();
+
+                alert(
+                    "Final amount cannot be negative."
+                );
+
+                return;
+
+            }
+
+
+            if (paid < 0) {
+
+                event.preventDefault();
+
+                alert(
+                    "Payment amount cannot be negative."
+                );
+
+                return;
+
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // ADD FIRST PRODUCT ROW
+    // =====================================================
+
+    addProductRow();
+
+
+    // Initial calculation
+
+    calculateBill();
+
+</script>
+
+
+{% endblock %}

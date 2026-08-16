@@ -1,0 +1,1086 @@
+{% extends "base.html" %}
+
+{% block title %}
+Employees - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Employees
+{% endblock %}
+
+{% block breadcrumb %}
+Employees
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER -->
+<!-- ===================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Employee Management
+        </h2>
+
+        <p>
+            Manage employees, salaries, roles and employment
+            information.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('add_employee_page') }}"
+        class="btn btn-primary"
+    >
+        + Add Employee
+    </a>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- EMPLOYEE ANALYTICS -->
+<!-- ===================================================== -->
+
+{% set total_employees = employees|length %}
+
+{% set total_salary = namespace(value=0) %}
+{% set highest_salary = namespace(value=0) %}
+{% set lowest_salary = namespace(value=0) %}
+{% set salary_count = namespace(value=0) %}
+
+{% set manager_count = namespace(value=0) %}
+{% set admin_count = namespace(value=0) %}
+{% set cashier_count = namespace(value=0) %}
+{% set sales_count = namespace(value=0) %}
+{% set inventory_count = namespace(value=0) %}
+{% set employee_count = namespace(value=0) %}
+
+
+{% for employee in employees %}
+
+    {% set salary = employee.salary or 0 %}
+
+    {% set total_salary.value =
+        total_salary.value + salary %}
+
+
+    {% if salary > highest_salary.value %}
+
+        {% set highest_salary.value = salary %}
+
+    {% endif %}
+
+
+    {% if salary > 0 %}
+
+        {% if lowest_salary.value == 0
+              or salary < lowest_salary.value %}
+
+            {% set lowest_salary.value = salary %}
+
+        {% endif %}
+
+        {% set salary_count.value =
+            salary_count.value + 1 %}
+
+    {% endif %}
+
+
+    {% if employee.role %}
+
+        {% set current_role =
+            employee.role|lower|trim %}
+
+
+        {% if current_role == "manager" %}
+
+            {% set manager_count.value =
+                manager_count.value + 1 %}
+
+
+        {% elif current_role == "admin" %}
+
+            {% set admin_count.value =
+                admin_count.value + 1 %}
+
+
+        {% elif current_role == "cashier" %}
+
+            {% set cashier_count.value =
+                cashier_count.value + 1 %}
+
+
+        {% elif current_role == "sales" %}
+
+            {% set sales_count.value =
+                sales_count.value + 1 %}
+
+
+        {% elif current_role == "inventory" %}
+
+            {% set inventory_count.value =
+                inventory_count.value + 1 %}
+
+
+        elif current_role == "employee" %}
+
+            {% set employee_count.value =
+                employee_count.value + 1 %}
+
+        {% endif %}
+
+    {% endif %}
+
+{% endfor %}
+
+
+{% set average_salary = 0 %}
+
+{% if salary_count.value > 0 %}
+
+    {% set average_salary =
+        total_salary.value / salary_count.value %}
+
+{% endif %}
+
+
+<!-- ===================================================== -->
+<!-- TOP STATISTICS -->
+<!-- ===================================================== -->
+
+<div class="stats-grid">
+
+
+    <!-- TOTAL EMPLOYEES -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            👥
+        </div>
+
+        <div>
+
+            <span>
+                Total Employees
+            </span>
+
+            <h3>
+                {{ total_employees }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- AVERAGE SALARY -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">
+            📊
+        </div>
+
+        <div>
+
+            <span>
+                Average Salary
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(average_salary) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- MONTHLY PAYROLL -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            💰
+        </div>
+
+        <div>
+
+            <span>
+                Monthly Payroll
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(total_salary.value) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- MANAGERS -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            👔
+        </div>
+
+        <div>
+
+            <span>
+                Managers
+            </span>
+
+            <h3>
+                {{ manager_count.value }}
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SALARY OVERVIEW -->
+<!-- ===================================================== -->
+
+<div class="stats-grid">
+
+
+    <!-- HIGHEST SALARY -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            ⬆️
+        </div>
+
+        <div>
+
+            <span>
+                Highest Salary
+            </span>
+
+            <h3>
+                ₹{{ "%.2f"|format(highest_salary.value) }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- LOWEST SALARY -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            ⬇️
+        </div>
+
+        <div>
+
+            <span>
+                Lowest Salary
+            </span>
+
+            <h3>
+
+                {% if lowest_salary.value > 0 %}
+
+                    ₹{{ "%.2f"|format(lowest_salary.value) }}
+
+                {% else %}
+
+                    ₹0.00
+
+                {% endif %}
+
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- ADMINS -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">
+            🛡️
+        </div>
+
+        <div>
+
+            <span>
+                Admins
+            </span>
+
+            <h3>
+                {{ admin_count.value }}
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- OTHER EMPLOYEES -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            💼
+        </div>
+
+        <div>
+
+            <span>
+                Employees
+            </span>
+
+            <h3>
+                {{ employee_count.value }}
+            </h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ROLE DISTRIBUTION -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                👥 Role Distribution
+            </h2>
+
+            <p>
+                Overview of employees according to their roles.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+
+        <!-- MANAGER -->
+
+        <div class="alert-box info">
+
+            <strong>
+                👔 Managers
+            </strong>
+
+            <p>
+                {{ manager_count.value }}
+                employee(s)
+            </p>
+
+        </div>
+
+
+        <!-- ADMIN -->
+
+        <div class="alert-box success">
+
+            <strong>
+                🛡️ Admins
+            </strong>
+
+            <p>
+                {{ admin_count.value }}
+                employee(s)
+            </p>
+
+        </div>
+
+
+        <!-- CASHIER -->
+
+        <div class="alert-box info">
+
+            <strong>
+                💵 Cashiers
+            </strong>
+
+            <p>
+                {{ cashier_count.value }}
+                employee(s)
+            </p>
+
+        </div>
+
+
+        <!-- SALES -->
+
+        <div class="alert-box success">
+
+            <strong>
+                🛒 Sales
+            </strong>
+
+            <p>
+                {{ sales_count.value }}
+                employee(s)
+            </p>
+
+        </div>
+
+
+        <!-- INVENTORY -->
+
+        <div class="alert-box info">
+
+            <strong>
+                📦 Inventory
+            </strong>
+
+            <p>
+                {{ inventory_count.value }}
+                employee(s)
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SEARCH & FILTER -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                🔎 Search Employees
+            </h2>
+
+            <p>
+                Search by employee name, phone, email or role.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        method="GET"
+        action="{{ url_for('employees') }}"
+        class="search-filter-form"
+    >
+
+
+        <!-- SEARCH -->
+
+        <div class="form-group">
+
+            <label for="search">
+                Search
+            </label>
+
+            <input
+                type="text"
+                id="search"
+                name="search"
+                value="{{ search or '' }}"
+                placeholder="Search employee..."
+            >
+
+        </div>
+
+
+        <!-- ROLE FILTER -->
+
+        <div class="form-group">
+
+            <label for="role">
+                Role
+            </label>
+
+            <select
+                id="role"
+                name="role"
+            >
+
+                <option
+                    value=""
+                    {% if not selected_role %}
+                    selected
+                    {% endif %}
+                >
+                    All Roles
+                </option>
+
+
+                <option
+                    value="Admin"
+                    {% if selected_role|lower == "admin" %}
+                    selected
+                    {% endif %}
+                >
+                    Admin
+                </option>
+
+
+                <option
+                    value="Manager"
+                    {% if selected_role|lower == "manager" %}
+                    selected
+                    {% endif %}
+                >
+                    Manager
+                </option>
+
+
+                <option
+                    value="Employee"
+                    {% if selected_role|lower == "employee" %}
+                    selected
+                    {% endif %}
+                >
+                    Employee
+                </option>
+
+
+                <option
+                    value="Cashier"
+                    {% if selected_role|lower == "cashier" %}
+                    selected
+                    {% endif %}
+                >
+                    Cashier
+                </option>
+
+
+                <option
+                    value="Sales"
+                    {% if selected_role|lower == "sales" %}
+                    selected
+                    {% endif %}
+                >
+                    Sales
+                </option>
+
+
+                <option
+                    value="Inventory"
+                    {% if selected_role|lower == "inventory" %}
+                    selected
+                    {% endif %}
+                >
+                    Inventory
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="search-buttons">
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                🔎 Search
+            </button>
+
+
+            <a
+                href="{{ url_for('employees') }}"
+                class="btn btn-secondary"
+            >
+                Clear
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- EMPLOYEE TABLE -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                All Employees
+            </h2>
+
+            <p>
+
+                {% if search or selected_role %}
+
+                    Showing filtered employee results.
+
+                {% else %}
+
+                    View and manage employee records.
+
+                {% endif %}
+
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <span class="record-count">
+
+                {{ employees|length }}
+
+                employee(s)
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        ID
+                    </th>
+
+                    <th>
+                        Employee
+                    </th>
+
+                    <th>
+                        Contact
+                    </th>
+
+                    <th>
+                        Role
+                    </th>
+
+                    <th>
+                        Salary
+                    </th>
+
+                    <th>
+                        Joining Date
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for employee in employees %}
+
+                <tr>
+
+
+                    <!-- ID -->
+
+                    <td>
+
+                        <strong>
+                            #{{ employee.employee_id }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- EMPLOYEE -->
+
+                    <td>
+
+                        <div class="employee-info">
+
+                            <div class="employee-avatar">
+
+                                {{ employee.employee_name[0]|upper }}
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    {{ employee.employee_name }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- CONTACT -->
+
+                    <td>
+
+                        {% if employee.phone %}
+
+                            <div>
+                                📞 {{ employee.phone }}
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if employee.email %}
+
+                            <div>
+                                ✉️ {{ employee.email }}
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if not employee.phone
+                              and not employee.email %}
+
+                            <span class="text-muted">
+                                No contact information
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ROLE -->
+
+                    <td>
+
+                        {% if employee.role %}
+
+                            {% if employee.role|lower == "manager" %}
+
+                                <span class="status-badge success">
+                                    Manager
+                                </span>
+
+                            {% elif employee.role|lower == "admin" %}
+
+                                <span class="status-badge danger">
+                                    Admin
+                                </span>
+
+                            {% elif employee.role|lower == "cashier" %}
+
+                                <span class="status-badge info">
+                                    Cashier
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge info">
+                                    {{ employee.role }}
+                                </span>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                Not specified
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- SALARY -->
+
+                    <td>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                employee.salary or 0
+                            ) }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- JOINING DATE -->
+
+                    <td>
+
+                        {% if employee.joining_date %}
+
+                            {{ employee.joining_date }}
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                Not specified
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div class="action-buttons">
+
+
+                            <a
+                                href="{{ url_for(
+                                    'edit_employee_page',
+                                    employee_id=employee.employee_id
+                                ) }}"
+                                class="btn btn-sm btn-secondary"
+                            >
+                                ✏️ Edit
+                            </a>
+
+
+                            <form
+                                action="{{ url_for(
+                                    'delete_employee_page',
+                                    employee_id=employee.employee_id
+                                ) }}"
+                                method="POST"
+                                style="display: inline;"
+                                onsubmit="
+                                    return confirm(
+                                        'Are you sure you want to delete this employee?'
+                                    );
+                                "
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-danger"
+                                >
+                                    🗑 Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% else %}
+
+
+                <!-- EMPTY STATE -->
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="empty-state"
+                    >
+
+                        <div
+                            style="
+                                font-size: 40px;
+                                margin-bottom: 10px;
+                            "
+                        >
+
+                            {% if search or selected_role %}
+                                🔎
+                            {% else %}
+                                👥
+                            {% endif %}
+
+                        </div>
+
+
+                        <h3>
+
+                            {% if search or selected_role %}
+
+                                No Matching Employees
+
+                            {% else %}
+
+                                No Employees Found
+
+                            {% endif %}
+
+                        </h3>
+
+
+                        <p>
+
+                            {% if search or selected_role %}
+
+                                Try changing your search
+                                or filter.
+
+                            {% else %}
+
+                                Start by adding your first
+                                employee.
+
+                            {% endif %}
+
+                        </p>
+
+
+                        {% if search or selected_role %}
+
+                            <a
+                                href="{{ url_for('employees') }}"
+                                class="btn btn-secondary"
+                            >
+                                Clear Filters
+                            </a>
+
+                        {% else %}
+
+                            <a
+                                href="{{ url_for(
+                                    'add_employee_page'
+                                ) }}"
+                                class="btn btn-primary"
+                            >
+                                + Add Employee
+                            </a>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- EMPLOYEE INFORMATION -->
+<!-- ===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>
+                💡 Employee Management
+            </h2>
+
+            <p>
+                Employee information is used throughout
+                the store management system.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+
+        <div class="alert-box info">
+
+            <strong>
+                👤 Employee Records
+            </strong>
+
+            <p>
+                Maintain accurate employee information
+                including their role, salary and joining date.
+            </p>
+
+        </div>
+
+
+        <div class="alert-box success">
+
+            <strong>
+                🔗 Transaction Tracking
+            </strong>
+
+            <p>
+                Employees can be associated with sales
+                and purchase transactions.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% endblock %}
