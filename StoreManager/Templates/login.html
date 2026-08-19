@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Store Manager</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    #dbeafe 0%,
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at bottom right,
+                    #e0e7ff 0%,
+                    transparent 35%
+                ),
+                #f5f7fb;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+
+        /* ============================= */
+        /* LOGIN WRAPPER */
+        /* ============================= */
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 950px;
+
+            min-height: 570px;
+
+            background: white;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 20px 50px rgba(15, 23, 42, 0.12);
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+        }
+
+
+        /* ============================= */
+        /* LEFT SIDE */
+        /* ============================= */
+
+        .login-left {
+            background:
+                linear-gradient(
+                    145deg,
+                    #1e3a8a,
+                    #2563eb
+                );
+
+            color: white;
+
+            padding: 50px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .login-left::before {
+            content: "";
+
+            position: absolute;
+
+            width: 260px;
+            height: 260px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.08);
+
+            top: -80px;
+            right: -80px;
+        }
+
+
+        .login-left::after {
+            content: "";
+
+            position: absolute;
+
+            width: 220px;
+            height: 220px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.06);
+
+            bottom: -100px;
+            left: -70px;
+        }
+
+
+        .brand {
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            margin-bottom: 45px;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .brand-icon {
+            width: 52px;
+            height: 52px;
+
+            border-radius: 14px;
+
+            background: rgba(255,255,255,0.15);
+
+            border: 1px solid rgba(255,255,255,0.2);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+
+            font-weight: 800;
+
+            backdrop-filter: blur(10px);
+        }
+
+
+        .brand-text h1 {
+            font-size: 21px;
+
+            margin-bottom: 3px;
+        }
+
+
+        .brand-text span {
+            font-size: 12px;
+
+            color: rgba(255,255,255,0.75);
+        }
+
+
+        .welcome {
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .welcome h2 {
+            font-size: 34px;
+
+            line-height: 1.2;
+
+            margin-bottom: 15px;
+        }
+
+
+        .welcome p {
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            color: rgba(255,255,255,0.78);
+
+            max-width: 360px;
+        }
+
+
+        .features {
+            margin-top: 35px;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .feature {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 15px;
+
+            font-size: 13px;
+
+            color: rgba(255,255,255,0.9);
+        }
+
+
+        .feature-icon {
+            width: 30px;
+            height: 30px;
+
+            border-radius: 8px;
+
+            background: rgba(255,255,255,0.12);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 14px;
+        }
+
+
+        /* ============================= */
+        /* RIGHT SIDE */
+        /* ============================= */
+
+        .login-right {
+            padding: 55px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+        }
+
+
+        .login-header {
+            margin-bottom: 32px;
+        }
+
+
+        .login-header h2 {
+            color: #111827;
+
+            font-size: 27px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .login-header p {
+            color: #6b7280;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ============================= */
+        /* ERROR MESSAGE */
+        /* ============================= */
+
+        .alert {
+            background: #fef2f2;
+
+            border: 1px solid #fecaca;
+
+            color: #b91c1c;
+
+            border-radius: 9px;
+
+            padding: 11px 13px;
+
+            font-size: 12px;
+
+            margin-bottom: 18px;
+        }
+
+
+        /* ============================= */
+        /* FORM */
+        /* ============================= */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+
+        .form-group label {
+            display: block;
+
+            color: #374151;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+
+        .input-wrapper {
+            position: relative;
+        }
+
+
+        .input-icon {
+            position: absolute;
+
+            left: 13px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #9ca3af;
+
+            font-size: 15px;
+
+            pointer-events: none;
+        }
+
+
+        .form-input {
+            width: 100%;
+
+            height: 46px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 9px;
+
+            padding: 0 42px;
+
+            outline: none;
+
+            color: #111827;
+
+            font-size: 13px;
+
+            background: #fff;
+
+            transition: 0.2s;
+        }
+
+
+        .form-input:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px rgba(37,99,235,0.10);
+        }
+
+
+        .password-toggle {
+            position: absolute;
+
+            right: 12px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            color: #9ca3af;
+
+            font-size: 15px;
+        }
+
+
+        .password-toggle:hover {
+            color: #2563eb;
+        }
+
+
+        /* ============================= */
+        /* OPTIONS */
+        /* ============================= */
+
+        .form-options {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+        }
+
+
+        .remember {
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #6b7280;
+
+            font-size: 12px;
+        }
+
+
+        .remember input {
+            accent-color: #2563eb;
+        }
+
+
+        /* ============================= */
+        /* LOGIN BUTTON */
+        /* ============================= */
+
+        .login-button {
+            width: 100%;
+
+            height: 47px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+            box-shadow:
+                0 5px 15px rgba(37,99,235,0.20);
+        }
+
+
+        .login-button:hover {
+            background: #1d4ed8;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 8px 18px rgba(37,99,235,0.25);
+        }
+
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+
+        /* ============================= */
+        /* FOOTER */
+        /* ============================= */
+
+        .login-footer {
+            text-align: center;
+
+            margin-top: 28px;
+
+            color: #9ca3af;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+        }
+
+
+        .login-footer strong {
+            color: #6b7280;
+        }
+
+
+        /* ============================= */
+        /* RESPONSIVE */
+        /* ============================= */
+
+        @media (max-width: 750px) {
+
+            body {
+                padding: 15px;
+            }
+
+
+            .login-wrapper {
+                grid-template-columns: 1fr;
+
+                max-width: 480px;
+
+                min-height: auto;
+            }
+
+
+            .login-left {
+                padding: 35px 30px;
+
+                min-height: 280px;
+            }
+
+
+            .brand {
+                margin-bottom: 25px;
+            }
+
+
+            .welcome h2 {
+                font-size: 27px;
+            }
+
+
+            .welcome p {
+                font-size: 13px;
+            }
+
+
+            .features {
+                display: none;
+            }
+
+
+            .login-right {
+                padding: 35px 30px;
+            }
+
+        }
+
+
+        @media (max-width: 400px) {
+
+            .login-left {
+                padding: 30px 22px;
+            }
+
+
+            .login-right {
+                padding: 30px 22px;
+            }
+
+
+            .welcome h2 {
+                font-size: 24px;
+            }
+
+
+            .login-header h2 {
+                font-size: 23px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="login-wrapper">
+
+
+        <!-- ========================================= -->
+        <!-- LEFT BRANDING -->
+        <!-- ========================================= -->
+
+        <div class="login-left">
+
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    SM
+                </div>
+
+
+                <div class="brand-text">
+
+                    <h1>
+                        Store Manager
+                    </h1>
+
+                    <span>
+                        Management System
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="welcome">
+
+                <h2>
+                    Welcome back.
+                </h2>
+
+
+                <p>
+                    Sign in to manage your store,
+                    track sales, monitor inventory,
+                    and keep your business running smoothly.
+                </p>
+
+            </div>
+
+
+            <div class="features">
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        ✓
+                    </div>
+
+                    <span>
+                        Manage products and inventory
+                    </span>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        ₹
+                    </div>
+
+                    <span>
+                        Track sales and purchases
+                    </span>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        📊
+                    </div>
+
+                    <span>
+                        View business reports
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ========================================= -->
+        <!-- LOGIN FORM -->
+        <!-- ========================================= -->
+
+        <div class="login-right">
+
+
+            <div class="login-header">
+
+                <h2>
+                    Sign in
+                </h2>
+
+                <p>
+                    Enter your account details to continue
+                    to Store Manager.
+                </p>
+
+            </div>
+
+
+            <!-- ===================================== -->
+            <!-- ERROR -->
+            <!-- ===================================== -->
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div class="alert">
+
+                            {{ message }}
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+
+            <!-- ===================================== -->
+            <!-- FORM -->
+            <!-- ===================================== -->
+
+            <form
+                method="POST"
+                action="{{ url_for('login') }}"
+            >
+
+
+                <div class="form-group">
+
+                    <label for="username">
+                        Username
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            👤
+                        </span>
+
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="form-input"
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                            required
+                            autofocus
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-input"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword()"
+                            aria-label="Show password"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-options">
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                            name="remember"
+                        >
+
+                        Remember me
+
+                    </label>
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+                    Sign In
+                </button>
+
+
+            </form>
+
+
+
+            <div class="login-footer">
+
+                <strong>
+                    Store Manager
+                </strong>
+                <br>
+
+                Secure store management system
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const button =
+                document.querySelector(".password-toggle");
+
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                button.textContent = "🙈";
+
+                button.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+            } else {
+
+                password.type = "password";
+
+                button.textContent = "👁";
+
+                button.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+
+            }
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

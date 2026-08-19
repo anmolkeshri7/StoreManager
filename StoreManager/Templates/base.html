@@ -5,39 +5,15 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>
-        {% block title %}
-        Store Manager
-        {% endblock %}
+        {% block title %}Store Manager{% endblock %}
     </title>
 
-
-    <!-- ================================================= -->
-    <!-- MAIN CSS -->
-    <!-- ================================================= -->
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for(
-            'static',
-            filename='css/style.css'
-        ) }}"
-    >
-
-
-    <!-- ================================================= -->
-    <!-- FONT AWESOME ICONS -->
-    <!-- ================================================= -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='CSS/style.css') }}">
 
 </head>
 
@@ -45,9 +21,9 @@
 <body>
 
 
-    <!-- ================================================= -->
+    <!-- ===================================================== -->
     <!-- SIDEBAR -->
-    <!-- ================================================= -->
+    <!-- ===================================================== -->
 
     <aside class="sidebar">
 
@@ -59,6 +35,7 @@
             <div class="logo-icon">
                 SM
             </div>
+
 
             <div>
 
@@ -75,180 +52,109 @@
         </div>
 
 
+
         <!-- ================= NAVIGATION ================= -->
 
         <nav class="sidebar-nav">
 
-
-            <!-- ================================================= -->
-            <!-- MAIN -->
-            <!-- ================================================= -->
 
             <p class="menu-title">
                 MAIN
             </p>
 
 
-            <!-- DASHBOARD -->
+            <a href="{{ url_for('home') }}"
+               class="nav-item">
 
-            <a
-                href="/"
-                class="nav-item"
-            >
+                <span>▦</span>
 
-                <span class="nav-icon">
-                    <i class="fa-solid fa-house"></i>
-                </span>
-
-                <span>
-                    Dashboard
-                </span>
+                Dashboard
 
             </a>
 
 
-            <!-- PRODUCTS -->
+            <a href="{{ url_for('products') }}"
+               class="nav-item">
 
-            <a
-                href="/products"
-                class="nav-item"
-            >
+                <span>📦</span>
 
-                <span class="nav-icon">
-                    <i class="fa-solid fa-box"></i>
-                </span>
-
-                <span>
-                    Products
-                </span>
+                Products
 
             </a>
 
 
-            <!-- CUSTOMERS -->
+            <a href="{{ url_for('customers') }}"
+               class="nav-item">
 
-            <a
-                href="/customers"
-                class="nav-item"
-            >
+                <span>👥</span>
 
-                <span class="nav-icon">
-                    <i class="fa-solid fa-users"></i>
-                </span>
-
-                <span>
-                    Customers
-                </span>
+                Customers
 
             </a>
 
 
-            <!-- SUPPLIERS -->
+            <a href="{{ url_for('suppliers') }}"
+               class="nav-item">
 
-            <a
-                href="/suppliers"
-                class="nav-item"
-            >
+                <span>🚚</span>
 
-                <span class="nav-icon">
-                    <i class="fa-solid fa-truck"></i>
-                </span>
-
-                <span>
-                    Suppliers
-                </span>
+                Suppliers
 
             </a>
 
 
 
-            <!-- ================================================= -->
-            <!-- TRANSACTIONS -->
-            <!-- ================================================= -->
+            <!-- ================= TRANSACTIONS ================= -->
 
             <p class="menu-title">
                 TRANSACTIONS
             </p>
 
 
-            <!-- SALES -->
+            <a href="{{ url_for('sales') }}"
+               class="nav-item">
 
-            <a
-                href="/sales"
-                class="nav-item"
-            >
+                <span>💰</span>
 
-                <span class="nav-icon">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                </span>
-
-                <span>
-                    Sales
-                </span>
+                Sales
 
             </a>
 
 
-            <!-- PURCHASES -->
+            <a href="{{ url_for('purchases') }}"
+               class="nav-item">
 
-            <a
-                href="/purchases"
-                class="nav-item"
-            >
+                <span>🛒</span>
 
-                <span class="nav-icon">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                </span>
-
-                <span>
-                    Purchases
-                </span>
+                Purchases
 
             </a>
 
 
 
-            <!-- ================================================= -->
-            <!-- MANAGEMENT -->
-            <!-- ================================================= -->
+            <!-- ================= MANAGEMENT ================= -->
 
             <p class="menu-title">
                 MANAGEMENT
             </p>
 
 
-            <!-- EMPLOYEES -->
+            <a href="{{ url_for('employees') }}"
+               class="nav-item">
 
-            <a
-                href="/employees"
-                class="nav-item"
-            >
+                <span>👨‍💼</span>
 
-                <span class="nav-icon">
-                    <i class="fa-solid fa-user-tie"></i>
-                </span>
-
-                <span>
-                    Employees
-                </span>
+                Employees
 
             </a>
 
 
-            <!-- REPORTS -->
+            <a href="{{ url_for('reports') }}"
+               class="nav-item">
 
-            <a
-                href="/reports"
-                class="nav-item"
-            >
+                <span>📊</span>
 
-                <span class="nav-icon">
-                    <i class="fa-solid fa-chart-column"></i>
-                </span>
-
-                <span>
-                    Reports
-                </span>
+                Reports
 
             </a>
 
@@ -264,38 +170,58 @@
         <div class="sidebar-bottom">
 
 
-            <!-- SETTINGS -->
+            <!-- ================= USER INFO ================= -->
 
-            <a
-                href="#"
-                class="nav-item"
-            >
+            <div class="sidebar-user">
 
-                <span class="nav-icon">
-                    <i class="fa-solid fa-gear"></i>
-                </span>
+
+                <div class="sidebar-user-avatar">
+
+                    {% if current_username %}
+
+                        {{ current_username[0]|upper }}
+
+                    {% else %}
+
+                        A
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="sidebar-user-info">
+
+                    <strong>
+
+                        {{ current_username or "Admin" }}
+
+                    </strong>
+
+
+                    <span>
+
+                        {{ current_role or "Administrator" }}
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ================= LOGOUT ================= -->
+
+            <a href="{{ url_for('logout') }}"
+               class="nav-item logout">
 
                 <span>
-                    Settings
+                    ↪
                 </span>
 
-            </a>
-
-
-            <!-- LOGOUT -->
-
-            <a
-                href="#"
-                class="nav-item logout"
-            >
-
-                <span class="nav-icon">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </span>
-
-                <span>
-                    Logout
-                </span>
+                Logout
 
             </a>
 
@@ -307,27 +233,23 @@
 
 
 
-    <!-- ================================================= -->
+    <!-- ===================================================== -->
     <!-- MAIN CONTENT -->
-    <!-- ================================================= -->
+    <!-- ===================================================== -->
 
     <main class="main-content">
 
 
-        <!-- ================================================= -->
-        <!-- TOP NAVBAR -->
-        <!-- ================================================= -->
+        <!-- ================= TOPBAR ================= -->
 
         <header class="topbar">
 
-
-            <!-- PAGE TITLE -->
 
             <div>
 
                 <h1>
                     {% block page_title %}
-                    Dashboard
+                        Dashboard
                     {% endblock %}
                 </h1>
 
@@ -337,7 +259,7 @@
                     Store Manager /
 
                     {% block breadcrumb %}
-                    Dashboard
+                        Dashboard
                     {% endblock %}
 
                 </p>
@@ -346,51 +268,61 @@
 
 
 
-            <!-- ================================================= -->
-            <!-- TOP RIGHT -->
-            <!-- ================================================= -->
+            <!-- ================= TOPBAR RIGHT ================= -->
 
             <div class="topbar-right">
 
 
-                <!-- NOTIFICATIONS -->
-
                 <button
+                    type="button"
                     class="notification"
-                    title="Notifications"
+                    aria-label="Notifications"
                 >
 
-                    <i class="fa-regular fa-bell"></i>
+                    🔔
 
-                    <span
-                        class="notification-dot"
-                    ></span>
+                    <span class="notification-dot"></span>
 
                 </button>
 
 
 
-                <!-- PROFILE -->
+                <!-- ================= PROFILE ================= -->
 
                 <div class="profile">
 
 
                     <div class="profile-avatar">
 
-                        <i class="fa-solid fa-user"></i>
+                        {% if current_username %}
+
+                            {{ current_username[0]|upper }}
+
+                        {% else %}
+
+                            A
+
+                        {% endif %}
 
                     </div>
 
 
                     <div class="profile-info">
 
+
                         <strong>
-                            Admin
+
+                            {{ current_username or "Admin" }}
+
                         </strong>
 
+
                         <span>
-                            Administrator
+
+                            {{ current_role or "Administrator" }}
+
                         </span>
+
 
                     </div>
 
@@ -406,18 +338,98 @@
 
 
         <!-- ================================================= -->
+        <!-- FLASH MESSAGES -->
+        <!-- ================================================= -->
+
+        {% with messages = get_flashed_messages(
+            with_categories=true
+        ) %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash-message flash-{{ category }}">
+
+                            <span>
+                                {{ message }}
+                            </span>
+
+                            <button
+                                type="button"
+                                onclick="this.parentElement.remove()"
+                                aria-label="Close"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <!-- ================================================= -->
         <!-- PAGE CONTENT -->
         <!-- ================================================= -->
 
         <section class="page-content">
 
             {% block content %}
+
             {% endblock %}
 
         </section>
 
 
     </main>
+
+
+
+    <!-- ===================================================== -->
+    <!-- SMALL UI SCRIPT -->
+    <!-- ===================================================== -->
+
+    <script>
+
+        /*
+         * Automatically hide flash messages
+         * after a few seconds.
+         */
+
+        setTimeout(function () {
+
+            const messages =
+                document.querySelectorAll(
+                    ".flash-message"
+                );
+
+            messages.forEach(function (message) {
+
+                message.style.opacity = "0";
+
+                message.style.transform =
+                    "translateY(-5px)";
+
+                setTimeout(function () {
+
+                    message.remove();
+
+                }, 300);
+
+            });
+
+        }, 5000);
+
+    </script>
 
 
 </body>

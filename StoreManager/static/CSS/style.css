@@ -1734,3 +1734,182 @@ tbody tr:hover {
             15px 10px 25px;
     }
 }
+/* ========================================================= */
+/* SIDEBAR USER */
+/* ========================================================= */
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px;
+
+    margin-bottom: 8px;
+
+    background: rgba(255, 255, 255, 0.05);
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    border-radius: 10px;
+}
+
+
+.sidebar-user-avatar {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.sidebar-user-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.sidebar-user-info strong {
+    color: #f9fafb;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+.sidebar-user-info span {
+    color: #9ca3af;
+
+    font-size: 10px;
+}
+
+
+/* ========================================================= */
+/* FLASH MESSAGES */
+/* ========================================================= */
+
+.flash-container {
+    position: fixed;
+
+    top: 100px;
+    right: 30px;
+
+    z-index: 1000;
+
+    width: min(380px, calc(100vw - 40px));
+}
+
+
+.flash-message {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 13px 15px;
+
+    margin-bottom: 10px;
+
+    border-radius: 9px;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow:
+        0 8px 25px rgba(15, 23, 42, 0.10);
+
+    font-size: 13px;
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+
+.flash-message button {
+    border: none;
+
+    background: transparent;
+
+    color: #6b7280;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+    line-height: 1;
+}
+
+
+.flash-message button:hover {
+    color: #111827;
+}
+
+
+.flash-success {
+    border-left: 4px solid #16a34a;
+}
+
+
+.flash-warning {
+    border-left: 4px solid #f59e0b;
+}
+
+
+.flash-danger {
+    border-left: 4px solid #dc2626;
+}
+
+
+/* ========================================================= */
+/* MOBILE SIDEBAR USER */
+/* ========================================================= */
+
+@media (max-width: 700px) {
+
+    .sidebar-user {
+        justify-content: center;
+
+        padding: 8px;
+    }
+
+
+    .sidebar-user-info {
+        display: none;
+    }
+
+
+    .flash-container {
+        top: 80px;
+
+        right: 15px;
+    }
+
+}
