@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create User - Store Manager
+{% endblock %}
+
+{% block page_title %}
+Create User
+{% endblock %}
+
+{% block breadcrumb %}
+Administration / User Management / Create User
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h2>
+            Create User Account
+        </h2>
+
+        <p>
+            Create a secure login account for a
+            Manager or Employee.
+        </p>
+
+    </div>
+
+
+    <div class="form-actions">
+
+        <a
+            href="{{ url_for('users') }}"
+            class="btn btn-secondary"
+        >
+            ← Back to Users
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="content-card">
+
+    <form
+        method="POST"
+        action="{{ url_for('add_user_page') }}"
+    >
+
+
+        <!-- ========================================= -->
+        <!-- USERNAME -->
+        <!-- ========================================= -->
+
+        <div class="form-group">
+
+            <label for="username">
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                class="form-input"
+                placeholder="Enter username"
+                maxlength="50"
+                required
+                autocomplete="off"
+            >
+
+        </div>
+
+
+
+        <!-- ========================================= -->
+        <!-- ROLE -->
+        <!-- ========================================= -->
+
+        <div class="form-group">
+
+            <label for="role">
+                Role
+            </label>
+
+            <select
+                id="role"
+                name="role"
+                class="form-input"
+                required
+                onchange="toggleEmployeeField()"
+            >
+
+                <option value="">
+                    Select role
+                </option>
+
+                <option value="Manager">
+                    Manager
+                </option>
+
+                <option value="Employee">
+                    Employee
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- ========================================= -->
+        <!-- EMPLOYEE -->
+        <!-- ========================================= -->
+
+        <div
+            class="form-group"
+            id="employee-field"
+            style="display:none;"
+        >
+
+            <label for="employee_id">
+                Link to Employee
+            </label>
+
+            <select
+                id="employee_id"
+                name="employee_id"
+                class="form-input"
+            >
+
+                <option value="">
+                    Select employee
+                </option>
+
+                {% for employee in employees %}
+
+                <option
+                    value="{{ employee.employee_id }}"
+                >
+                    {{ employee.employee_name }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+            <small>
+                Link this login account to the
+                corresponding employee record.
+            </small>
+
+        </div>
+
+
+
+        <!-- ========================================= -->
+        <!-- PASSWORD -->
+        <!-- ========================================= -->
+
+        <div class="form-group">
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-input"
+                placeholder="Enter password"
+                required
+                autocomplete="new-password"
+            >
+
+        </div>
+
+
+
+        <!-- ========================================= -->
+        <!-- CONFIRM PASSWORD -->
+        <!-- ========================================= -->
+
+        <div class="form-group">
+
+            <label for="confirm_password">
+                Confirm Password
+            </label>
+
+            <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                class="form-input"
+                placeholder="Confirm password"
+                required
+                autocomplete="new-password"
+            >
+
+        </div>
+
+
+
+        <!-- ========================================= -->
+        <!-- ACTIONS -->
+        <!-- ========================================= -->
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('users') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Create User
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+<script>
+
+function toggleEmployeeField() {
+
+    const role =
+        document.getElementById("role").value;
+
+    const employeeField =
+        document.getElementById("employee-field");
+
+    const employeeSelect =
+        document.getElementById("employee_id");
+
+
+    if (
+        role === "Manager" ||
+        role === "Employee"
+    ) {
+
+        employeeField.style.display = "block";
+
+        employeeSelect.required = true;
+
+    } else {
+
+        employeeField.style.display = "none";
+
+        employeeSelect.required = false;
+
+        employeeSelect.value = "";
+
+    }
+
+}
+
+</script>
+
+{% endblock %}

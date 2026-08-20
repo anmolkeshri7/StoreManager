@@ -1,3 +1,5 @@
+
+
 import os
 
 from flask import (
@@ -11,11 +13,15 @@ from flask import (
 )
 
 from mysql.connector import IntegrityError
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from backend.db import get_connection
-
 from backend.auth import login_required, role_required
+
+
+# =========================================================
+# DAO IMPORTS
+# =========================================================
 
 from backend.productsdao import (
     get_products,
@@ -84,6 +90,7 @@ from backend.dashboarddao import (
     get_sales_by_category
 )
 
+
 from backend.reportsdao import (
     get_sales_summary,
     get_profit_summary,
@@ -107,8 +114,10 @@ app = Flask(__name__)
 
 
 # =========================================================
-# SECRET KEY
+# FLASK APP
 # =========================================================
+
+app = Flask(__name__)
 
 app.secret_key = os.getenv(
     "FLASK_SECRET_KEY",
@@ -117,11 +126,7 @@ app.secret_key = os.getenv(
 
 
 # =========================================================
-# TEMPLATE CONTEXT
-# =========================================================
-#
-# Makes logged-in username and role available in base.html
-#
+# TEMPLATE USER CONTEXT
 # =========================================================
 
 @app.context_processor
@@ -137,64 +142,31 @@ def inject_user_info():
 # LOGIN
 # =========================================================
 
-@app.route(
-    "/login",
-    methods=["GET", "POST"]
-)
+@app.route("/login", methods=["GET", "POST"])
 def login():
 
-    # Already logged in
     if "user_id" in session:
-
-        return redirect(
-            url_for("home")
-        )
-
+        return redirect(url_for("home"))
 
     if request.method == "POST":
 
-        username = request.form.get(
-            "username",
-            ""
-        ).strip()
-
-        password = request.form.get(
-            "password",
-            ""
-        )
-
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
 
         if not username or not password:
-
-            flash(
-                "Please enter your username and password.",
-                "danger"
-            )
-
-            return render_template(
-                "login.html"
-            )
-
+            flash("Please enter your username and password.", "danger")
+            return render_template("login.html")
 
         connection = None
         cursor = None
 
         try:
-
             connection = get_connection()
-
-            cursor = connection.cursor(
-                dictionary=True
-            )
+            cursor = connection.cursor(dictionary=True)
 
             cursor.execute(
                 """
-                SELECT
-                    user_id,
-                    username,
-                    password,
-                    role,
-                    employee_id
+                SELECT user_id, username, password, role, employee_id
                 FROM users
                 WHERE username = %s
                 LIMIT 1
@@ -204,104 +176,43 @@ def login():
 
             user = cursor.fetchone()
 
-
-            if user is None:
-
-                flash(
-                    "Invalid username or password.",
-                    "danger"
-                )
-
-                return render_template(
-                    "login.html"
-                )
-
-
-            stored_password = user["password"]
-
-
-            # =================================================
-            # PASSWORD VERIFICATION
-            # =================================================
+            if not user:
+                flash("Invalid username or password.", "danger")
+                return render_template("login.html")
 
             try:
-
-                password_valid = check_password_hash(
-                    stored_password,
+                valid_password = check_password_hash(
+                    user["password"],
                     password
                 )
+            except (ValueError, TypeError):
+                valid_password = False
 
-            except ValueError:
-
-                password_valid = False
-
-
-            if not password_valid:
-
-                flash(
-                    "Invalid username or password.",
-                    "danger"
-                )
-
-                return render_template(
-                    "login.html"
-                )
-
-
-            # =================================================
-            # LOGIN SUCCESS
-            # =================================================
+            if not valid_password:
+                flash("Invalid username or password.", "danger")
+                return render_template("login.html")
 
             session.clear()
-
             session["user_id"] = user["user_id"]
             session["username"] = user["username"]
             session["role"] = user["role"]
             session["employee_id"] = user["employee_id"]
 
-
-            flash(
-                f"Welcome back, {user['username']}!",
-                "success"
-            )
-
-
-            return redirect(
-                url_for("home")
-            )
-
+            flash(f"Welcome back, {user['username']}!", "success")
+            return redirect(url_for("home"))
 
         except Exception as error:
-
-            print(
-                "LOGIN ERROR:",
-                error
-            )
-
-            flash(
-                "Unable to process login right now.",
-                "danger"
-            )
-
-            return render_template(
-                "login.html"
-            )
-
+            print("LOGIN ERROR:", error)
+            flash("Unable to process login right now.", "danger")
+            return render_template("login.html")
 
         finally:
-
             if cursor:
-
                 cursor.close()
-
             if connection:
-
                 connection.close()
 
-
-    return render_template(
-        "login.html"
-    )
+    return render_template("login.html")
 
 
 # =========================================================
@@ -311,25 +222,9 @@ def login():
 @app.route("/logout")
 def logout():
 
-    username = session.get(
-        "username"
-    )
-
-
     session.clear()
-
-
-    if username:
-
-        flash(
-            "You have been logged out successfully.",
-            "success"
-        )
-
-
-    return redirect(
-        url_for("login")
-    )
+    flash("You have been logged out successfully.", "success")
+    return redirect(url_for("login"))
 
 
 # =========================================================
@@ -352,7 +247,6 @@ def home():
 
     sales_by_category = get_sales_by_category()
 
-
     return render_template(
         "dashboard.html",
         stats=stats,
@@ -369,11 +263,7 @@ def home():
 # =========================================================
 
 @app.route("/products")
-@role_required(
-    "Admin",
-    "Manager",
-    "Employee"
-)
+@role_required("Admin", "Manager", "Employee")
 def products():
 
     data = get_products()
@@ -392,16 +282,11 @@ def products():
     "/products/add",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def add_product_page():
 
     categories = get_categories()
-
     suppliers = get_suppliers()
-
 
     if request.method == "POST":
 
@@ -409,55 +294,40 @@ def add_product_page():
             "product_name"
         ]
 
-
         category_id = int(
             request.form["category_id"]
         )
-
 
         supplier_id = request.form.get(
             "supplier_id"
         )
 
-
         if supplier_id:
-
-            supplier_id = int(
-                supplier_id
-            )
-
+            supplier_id = int(supplier_id)
         else:
-
             supplier_id = None
-
 
         barcode = request.form.get(
             "barcode"
         )
 
-
         purchase_price = float(
             request.form["purchase_price"]
         )
-
 
         selling_price = float(
             request.form["selling_price"]
         )
 
-
         stock_quantity = int(
             request.form["stock_quantity"]
         )
-
 
         reorder_level = int(
             request.form["reorder_level"]
         )
 
-
         unit = request.form["unit"]
-
 
         add_product(
             product_name,
@@ -471,11 +341,9 @@ def add_product_page():
             unit
         )
 
-
         return redirect(
             url_for("products")
         )
-
 
     return render_template(
         "add_product.html",
@@ -492,26 +360,18 @@ def add_product_page():
     "/products/edit/<int:product_id>",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def edit_product_page(product_id):
 
     product = get_product_by_id(
         product_id
     )
 
-
     if product is None:
-
         return "Product not found", 404
 
-
     categories = get_categories()
-
     suppliers = get_suppliers()
-
 
     if request.method == "POST":
 
@@ -519,55 +379,40 @@ def edit_product_page(product_id):
             "product_name"
         ]
 
-
         category_id = int(
             request.form["category_id"]
         )
-
 
         supplier_id = request.form.get(
             "supplier_id"
         )
 
-
         if supplier_id:
-
-            supplier_id = int(
-                supplier_id
-            )
-
+            supplier_id = int(supplier_id)
         else:
-
             supplier_id = None
-
 
         barcode = request.form.get(
             "barcode"
         )
 
-
         purchase_price = float(
             request.form["purchase_price"]
         )
-
 
         selling_price = float(
             request.form["selling_price"]
         )
 
-
         stock_quantity = int(
             request.form["stock_quantity"]
         )
-
 
         reorder_level = int(
             request.form["reorder_level"]
         )
 
-
         unit = request.form["unit"]
-
 
         update_product(
             product_id,
@@ -582,11 +427,9 @@ def edit_product_page(product_id):
             unit
         )
 
-
         return redirect(
             url_for("products")
         )
-
 
     return render_template(
         "edit_product.html",
@@ -604,16 +447,12 @@ def edit_product_page(product_id):
     "/products/delete/<int:product_id>",
     methods=["POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def delete_product_page(product_id):
 
     delete_product(
         product_id
     )
-
 
     return redirect(
         url_for("products")
@@ -625,11 +464,7 @@ def delete_product_page(product_id):
 # =========================================================
 
 @app.route("/categories")
-@role_required(
-    "Admin",
-    "Manager",
-    "Employee"
-)
+@role_required("Admin", "Manager", "Employee")
 def categories():
 
     data = get_categories()
@@ -648,10 +483,7 @@ def categories():
     "/categories/add",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def add_category_page():
 
     if request.method == "POST":
@@ -660,23 +492,19 @@ def add_category_page():
             "category_name"
         ].strip()
 
-
         description = request.form.get(
             "description",
             ""
         ).strip()
-
 
         add_category(
             category_name,
             description
         )
 
-
         return redirect(
             url_for("categories")
         )
-
 
     return render_template(
         "add_category.html"
@@ -691,21 +519,15 @@ def add_category_page():
     "/categories/edit/<int:category_id>",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def edit_category_page(category_id):
 
     category = get_category_by_id(
         category_id
     )
 
-
     if category is None:
-
         return "Category not found", 404
-
 
     if request.method == "POST":
 
@@ -713,12 +535,10 @@ def edit_category_page(category_id):
             "category_name"
         ].strip()
 
-
         description = request.form.get(
             "description",
             ""
         ).strip()
-
 
         update_category(
             category_id,
@@ -726,11 +546,9 @@ def edit_category_page(category_id):
             description
         )
 
-
         return redirect(
             url_for("categories")
         )
-
 
     return render_template(
         "edit_category.html",
@@ -746,10 +564,7 @@ def edit_category_page(category_id):
     "/categories/delete/<int:category_id>",
     methods=["POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def delete_category_page(category_id):
 
     try:
@@ -758,11 +573,9 @@ def delete_category_page(category_id):
             category_id
         )
 
-
         return redirect(
             url_for("categories")
         )
-
 
     except IntegrityError:
 
@@ -778,11 +591,7 @@ def delete_category_page(category_id):
 # =========================================================
 
 @app.route("/suppliers")
-@role_required(
-    "Admin",
-    "Manager",
-    "Employee"
-)
+@role_required("Admin", "Manager", "Employee")
 def suppliers():
 
     data = get_suppliers()
@@ -801,10 +610,7 @@ def suppliers():
     "/suppliers/add",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def add_supplier_page():
 
     if request.method == "POST":
@@ -813,24 +619,20 @@ def add_supplier_page():
             "supplier_name"
         ].strip()
 
-
         phone = request.form.get(
             "phone",
             ""
         ).strip()
-
 
         email = request.form.get(
             "email",
             ""
         ).strip()
 
-
         address = request.form.get(
             "address",
             ""
         ).strip()
-
 
         add_supplier(
             supplier_name,
@@ -839,11 +641,9 @@ def add_supplier_page():
             address
         )
 
-
         return redirect(
             url_for("suppliers")
         )
-
 
     return render_template(
         "add_supplier.html"
@@ -858,21 +658,15 @@ def add_supplier_page():
     "/suppliers/edit/<int:supplier_id>",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def edit_supplier_page(supplier_id):
 
     supplier = get_supplier_by_id(
         supplier_id
     )
 
-
     if supplier is None:
-
         return "Supplier not found", 404
-
 
     if request.method == "POST":
 
@@ -880,24 +674,20 @@ def edit_supplier_page(supplier_id):
             "supplier_name"
         ].strip()
 
-
         phone = request.form.get(
             "phone",
             ""
         ).strip()
-
 
         email = request.form.get(
             "email",
             ""
         ).strip()
 
-
         address = request.form.get(
             "address",
             ""
         ).strip()
-
 
         update_supplier(
             supplier_id,
@@ -907,11 +697,9 @@ def edit_supplier_page(supplier_id):
             address
         )
 
-
         return redirect(
             url_for("suppliers")
         )
-
 
     return render_template(
         "edit_supplier.html",
@@ -927,10 +715,7 @@ def edit_supplier_page(supplier_id):
     "/suppliers/delete/<int:supplier_id>",
     methods=["POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def delete_supplier_page(supplier_id):
 
     try:
@@ -939,11 +724,9 @@ def delete_supplier_page(supplier_id):
             supplier_id
         )
 
-
         return redirect(
             url_for("suppliers")
         )
-
 
     except IntegrityError:
 
@@ -959,11 +742,7 @@ def delete_supplier_page(supplier_id):
 # =========================================================
 
 @app.route("/customers")
-@role_required(
-    "Admin",
-    "Manager",
-    "Employee"
-)
+@role_required("Admin", "Manager", "Employee")
 def customers():
 
     data = get_customers()
@@ -982,11 +761,7 @@ def customers():
     "/customers/add",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager",
-    "Employee"
-)
+@role_required("Admin", "Manager", "Employee")
 def add_customer_page():
 
     if request.method == "POST":
@@ -995,24 +770,20 @@ def add_customer_page():
             "customer_name"
         ].strip()
 
-
         phone = request.form.get(
             "phone",
             ""
         ).strip()
-
 
         email = request.form.get(
             "email",
             ""
         ).strip()
 
-
         address = request.form.get(
             "address",
             ""
         ).strip()
-
 
         add_customer(
             customer_name,
@@ -1021,11 +792,9 @@ def add_customer_page():
             address
         )
 
-
         return redirect(
             url_for("customers")
         )
-
 
     return render_template(
         "add_customer.html"
@@ -1040,22 +809,15 @@ def add_customer_page():
     "/customers/edit/<int:customer_id>",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager",
-    "Employee"
-)
+@role_required("Admin", "Manager", "Employee")
 def edit_customer_page(customer_id):
 
     customer = get_customer_by_id(
         customer_id
     )
 
-
     if customer is None:
-
         return "Customer not found", 404
-
 
     if request.method == "POST":
 
@@ -1063,24 +825,20 @@ def edit_customer_page(customer_id):
             "customer_name"
         ].strip()
 
-
         phone = request.form.get(
             "phone",
             ""
         ).strip()
-
 
         email = request.form.get(
             "email",
             ""
         ).strip()
 
-
         address = request.form.get(
             "address",
             ""
         ).strip()
-
 
         update_customer(
             customer_id,
@@ -1090,11 +848,9 @@ def edit_customer_page(customer_id):
             address
         )
 
-
         return redirect(
             url_for("customers")
         )
-
 
     return render_template(
         "edit_customer.html",
@@ -1110,10 +866,7 @@ def edit_customer_page(customer_id):
     "/customers/delete/<int:customer_id>",
     methods=["POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def delete_customer_page(customer_id):
 
     try:
@@ -1122,11 +875,9 @@ def delete_customer_page(customer_id):
             customer_id
         )
 
-
         return redirect(
             url_for("customers")
         )
-
 
     except IntegrityError:
 
@@ -1135,6 +886,202 @@ def delete_customer_page(customer_id):
             "this customer has existing sales records.",
             400
         )
+
+
+# =========================================================
+# USER MANAGEMENT ROUTES
+# =========================================================
+
+@app.route("/users")
+@role_required("Admin")
+def users():
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT
+                u.user_id,
+                u.username,
+                u.role,
+                u.employee_id,
+                e.employee_name
+            FROM users u
+            LEFT JOIN employees e
+                ON u.employee_id = e.employee_id
+            ORDER BY u.user_id
+            """
+        )
+
+        data = cursor.fetchall()
+
+        return render_template(
+            "users.html",
+            users=data
+        )
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+
+# ---------------------------------------------------------
+# ADD USER
+# ---------------------------------------------------------
+
+@app.route("/users/add", methods=["GET", "POST"])
+@role_required("Admin")
+def add_user_page():
+
+    employees = get_employees()
+
+    if request.method == "POST":
+
+        username = request.form.get("username", "").strip()
+        role = request.form.get("role", "").strip()
+        employee_id = request.form.get("employee_id", "").strip()
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        if not username or not password:
+            flash("Username and password are required.", "danger")
+            return render_template("add_user.html", employees=employees)
+
+        if role not in ("Manager", "Employee"):
+            flash("Only Manager and Employee accounts can be created here.", "danger")
+            return render_template("add_user.html", employees=employees)
+
+        if password != confirm_password:
+            flash("Passwords do not match.", "danger")
+            return render_template("add_user.html", employees=employees)
+
+        if not employee_id:
+            flash("Please link the account to an employee.", "danger")
+            return render_template("add_user.html", employees=employees)
+
+        try:
+            employee_id = int(employee_id)
+        except ValueError:
+            flash("Invalid employee selection.", "danger")
+            return render_template("add_user.html", employees=employees)
+
+        connection = None
+        cursor = None
+
+        try:
+            connection = get_connection()
+            cursor = connection.cursor()
+
+            cursor.execute(
+                "SELECT user_id FROM users WHERE username = %s LIMIT 1",
+                (username,)
+            )
+
+            if cursor.fetchone():
+                flash("That username already exists.", "danger")
+                return render_template("add_user.html", employees=employees)
+
+            cursor.execute(
+                "SELECT user_id FROM users WHERE employee_id = %s LIMIT 1",
+                (employee_id,)
+            )
+
+            if cursor.fetchone():
+                flash("This employee already has a login account.", "danger")
+                return render_template("add_user.html", employees=employees)
+
+            password_hash = generate_password_hash(password)
+
+            cursor.execute(
+                """
+                INSERT INTO users (username, password, role, employee_id)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (username, password_hash, role, employee_id)
+            )
+
+            connection.commit()
+
+            flash("User account created successfully.", "success")
+            return redirect(url_for("users"))
+
+        except IntegrityError:
+            if connection:
+                connection.rollback()
+            flash("Unable to create the account. Username or employee may already be linked.", "danger")
+            return render_template("add_user.html", employees=employees)
+
+        except Exception as error:
+            if connection:
+                connection.rollback()
+            print("CREATE USER ERROR:", error)
+            flash("Unable to create the user account.", "danger")
+            return render_template("add_user.html", employees=employees)
+
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
+
+    return render_template(
+        "add_user.html",
+        employees=employees
+    )
+
+
+# ---------------------------------------------------------
+# DELETE USER
+# ---------------------------------------------------------
+
+@app.route("/users/delete/<int:user_id>", methods=["POST"])
+@role_required("Admin")
+def delete_user_page(user_id):
+
+    if user_id == session.get("user_id"):
+        flash("You cannot delete your own account while logged in.", "danger")
+        return redirect(url_for("users"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "DELETE FROM users WHERE user_id = %s",
+            (user_id,)
+        )
+
+        connection.commit()
+        flash("User account deleted successfully.", "success")
+
+    except IntegrityError:
+        if connection:
+            connection.rollback()
+        flash("This user account cannot be deleted.", "danger")
+
+    except Exception as error:
+        if connection:
+            connection.rollback()
+        print("DELETE USER ERROR:", error)
+        flash("Unable to delete the user account.", "danger")
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+    return redirect(url_for("users"))
 
 
 # =========================================================
@@ -1150,12 +1097,15 @@ def employees():
         ""
     ).strip()
 
-
     role = request.args.get(
         "role",
         ""
     ).strip()
 
+
+    # =====================================================
+    # GET EMPLOYEES
+    # =====================================================
 
     if search:
 
@@ -1167,6 +1117,10 @@ def employees():
 
         data = get_employees()
 
+
+    # =====================================================
+    # ROLE FILTER
+    # =====================================================
 
     if role:
 
@@ -1203,24 +1157,20 @@ def add_employee_page():
             "employee_name"
         ].strip()
 
-
         phone = request.form.get(
             "phone",
             ""
         ).strip()
-
 
         email = request.form.get(
             "email",
             ""
         ).strip()
 
-
         role = request.form.get(
             "role",
             ""
         ).strip()
-
 
         salary_text = request.form.get(
             "salary",
@@ -1228,15 +1178,17 @@ def add_employee_page():
         ).strip()
 
 
+        # Empty date → None
         joining_date = request.form.get(
             "joining_date"
         )
-
 
         if not joining_date:
 
             joining_date = None
 
+
+        # Salary
 
         if salary_text:
 
@@ -1257,7 +1209,6 @@ def add_employee_page():
             salary,
             joining_date
         )
-
 
         return redirect(
             url_for("employees")
@@ -1296,24 +1247,20 @@ def edit_employee_page(employee_id):
             "employee_name"
         ].strip()
 
-
         phone = request.form.get(
             "phone",
             ""
         ).strip()
-
 
         email = request.form.get(
             "email",
             ""
         ).strip()
 
-
         role = request.form.get(
             "role",
             ""
         ).strip()
-
 
         salary_text = request.form.get(
             "salary",
@@ -1321,15 +1268,18 @@ def edit_employee_page(employee_id):
         ).strip()
 
 
+        # Empty date → None
+
         joining_date = request.form.get(
             "joining_date"
         )
-
 
         if not joining_date:
 
             joining_date = None
 
+
+        # Salary
 
         if salary_text:
 
@@ -1351,7 +1301,6 @@ def edit_employee_page(employee_id):
             salary,
             joining_date
         )
-
 
         return redirect(
             url_for("employees")
@@ -1380,7 +1329,6 @@ def delete_employee_page(employee_id):
         delete_employee(
             employee_id
         )
-
 
         return redirect(
             url_for("employees")
@@ -1477,10 +1425,7 @@ def delete_employee_page(employee_id):
 # =========================================================
 
 @app.route("/purchases")
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def purchases():
 
     data = get_purchases()
@@ -1498,26 +1443,20 @@ def purchases():
 @app.route(
     "/purchases/<int:purchase_id>"
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def purchase_details(purchase_id):
 
     purchase = get_purchase_by_id(
         purchase_id
     )
 
-
     if purchase is None:
 
         return "Purchase not found", 404
 
-
     details = get_purchase_details(
         purchase_id
     )
-
 
     return render_template(
         "purchase_details.html",
@@ -1534,10 +1473,7 @@ def purchase_details(purchase_id):
     "/purchases/add",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def add_purchase_page():
 
     suppliers = get_suppliers()
@@ -1574,11 +1510,9 @@ def add_purchase_page():
             "product_id[]"
         )
 
-
         quantities = request.form.getlist(
             "quantity[]"
         )
-
 
         purchase_prices = request.form.getlist(
             "purchase_price[]"
@@ -1600,7 +1534,6 @@ def add_purchase_page():
             quantity = int(
                 quantities[i]
             )
-
 
             purchase_price = float(
                 purchase_prices[i]
@@ -1667,16 +1600,12 @@ def add_purchase_page():
     "/purchases/delete/<int:purchase_id>",
     methods=["POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def delete_purchase_page(purchase_id):
 
     delete_purchase(
         purchase_id
     )
-
 
     return redirect(
         url_for("purchases")
@@ -1688,11 +1617,7 @@ def delete_purchase_page(purchase_id):
 # =========================================================
 
 @app.route("/sales")
-@role_required(
-    "Admin",
-    "Manager",
-    "Employee"
-)
+@role_required("Admin", "Manager", "Employee")
 def sales():
 
     data = get_sales()
@@ -1710,17 +1635,12 @@ def sales():
 @app.route(
     "/sales/<int:sale_id>"
 )
-@role_required(
-    "Admin",
-    "Manager",
-    "Employee"
-)
+@role_required("Admin", "Manager", "Employee")
 def sale_details(sale_id):
 
     sale = get_sale_by_id(
         sale_id
     )
-
 
     if sale is None:
 
@@ -1753,11 +1673,7 @@ def sale_details(sale_id):
     "/sales/add",
     methods=["GET", "POST"]
 )
-@role_required(
-    "Admin",
-    "Manager",
-    "Employee"
-)
+@role_required("Admin", "Manager", "Employee")
 def add_sale_page():
 
     customers = get_customers()
@@ -1805,11 +1721,9 @@ def add_sale_page():
             "product_id[]"
         )
 
-
         quantities = request.form.getlist(
             "quantity[]"
         )
-
 
         selling_prices = request.form.getlist(
             "selling_price[]"
@@ -1831,7 +1745,6 @@ def add_sale_page():
             quantity = int(
                 quantities[i]
             )
-
 
             selling_price = float(
                 selling_prices[i]
@@ -1961,16 +1874,12 @@ def add_sale_page():
     "/sales/delete/<int:sale_id>",
     methods=["POST"]
 )
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def delete_sale_page(sale_id):
 
     delete_sale(
         sale_id
     )
-
 
     return redirect(
         url_for("sales")
@@ -1982,10 +1891,7 @@ def delete_sale_page(sale_id):
 # =========================================================
 
 @app.route("/reports")
-@role_required(
-    "Admin",
-    "Manager"
-)
+@role_required("Admin", "Manager")
 def reports():
 
     start_date = request.args.get(
@@ -1993,79 +1899,62 @@ def reports():
         ""
     ).strip()
 
-
     end_date = request.args.get(
         "end_date",
         ""
     ).strip()
-
 
     sales_summary = get_sales_summary(
         start_date or None,
         end_date or None
     )
 
-
     profit_summary = get_profit_summary(
         start_date or None,
         end_date or None
     )
-
 
     daily_sales = get_daily_sales(
         start_date or None,
         end_date or None
     )
 
-
-    top_selling_products = (
-        get_reports_top_selling_products(
-            start_date or None,
-            end_date or None
-        )
+    top_selling_products = get_reports_top_selling_products(
+        start_date or None,
+        end_date or None
     )
 
-
-    sales_by_category = (
-        get_reports_sales_by_category(
-            start_date or None,
-            end_date or None
-        )
+    sales_by_category = get_reports_sales_by_category(
+        start_date or None,
+        end_date or None
     )
-
 
     customer_sales = get_customer_sales(
         start_date or None,
         end_date or None
     )
 
-
     employee_sales = get_employee_sales(
         start_date or None,
         end_date or None
     )
-
 
     purchase_summary = get_purchase_summary(
         start_date or None,
         end_date or None
     )
 
-
     supplier_purchases = get_supplier_purchases(
         start_date or None,
         end_date or None
     )
-
 
     daily_purchases = get_daily_purchases(
         start_date or None,
         end_date or None
     )
 
-
     inventory_summary = get_inventory_summary()
-
 
     return render_template(
         "reports.html",
@@ -2086,7 +1975,7 @@ def reports():
 
 
 # =========================================================
-# 403 ERROR
+# 403 ACCESS DENIED
 # =========================================================
 
 @app.errorhandler(403)
@@ -2095,130 +1984,54 @@ def forbidden(error):
     return (
         """
         <!DOCTYPE html>
-
         <html>
-
         <head>
-
-            <title>
-                Access Denied - Store Manager
-            </title>
-
-            <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0"
-            >
-
+            <title>Access Denied - Store Manager</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
-
                 body {
                     margin: 0;
                     padding: 30px;
-
                     min-height: 100vh;
-
                     display: flex;
                     align-items: center;
                     justify-content: center;
-
                     background: #f5f7fb;
-
-                    font-family:
-                        Arial,
-                        Helvetica,
-                        sans-serif;
+                    font-family: Arial, Helvetica, sans-serif;
                 }
-
                 .box {
                     max-width: 500px;
-
                     width: 100%;
-
                     padding: 40px;
-
                     text-align: center;
-
                     background: white;
-
                     border-radius: 16px;
-
                     border: 1px solid #e5e7eb;
-
-                    box-shadow:
-                        0 15px 40px
-                        rgba(15, 23, 42, 0.10);
+                    box-shadow: 0 15px 40px rgba(15, 23, 42, 0.10);
                 }
-
-                .icon {
-                    font-size: 55px;
-
-                    margin-bottom: 15px;
-                }
-
-                h1 {
-                    color: #111827;
-
-                    margin-bottom: 10px;
-                }
-
-                p {
-                    color: #6b7280;
-
-                    line-height: 1.6;
-                }
-
+                .icon { font-size: 55px; margin-bottom: 15px; }
+                h1 { color: #111827; margin-bottom: 10px; }
+                p { color: #6b7280; line-height: 1.6; }
                 a {
                     display: inline-block;
-
                     margin-top: 20px;
-
                     padding: 11px 20px;
-
                     border-radius: 8px;
-
                     background: #2563eb;
-
                     color: white;
-
                     text-decoration: none;
-
                     font-weight: 600;
                 }
-
-                a:hover {
-                    background: #1d4ed8;
-                }
-
             </style>
-
         </head>
-
-
         <body>
-
             <div class="box">
-
-                <div class="icon">
-                    🔒
-                </div>
-
-                <h1>
-                    Access Denied
-                </h1>
-
-                <p>
-                    You do not have permission to access
-                    this page with your current account role.
-                </p>
-
-                <a href="/">
-                    Back to Dashboard
-                </a>
-
+                <div class="icon">🔒</div>
+                <h1>Access Denied</h1>
+                <p>You do not have permission to access this page with your current account role.</p>
+                <a href="/">Back to Dashboard</a>
             </div>
-
         </body>
-
         </html>
         """,
         403
@@ -2230,7 +2043,6 @@ def forbidden(error):
 # =========================================================
 
 if __name__ == "__main__":
-
     app.run(
         host="0.0.0.0",
         port=5000,
